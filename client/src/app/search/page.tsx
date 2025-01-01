@@ -28,6 +28,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 // import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Mock data for movies and TV shows
@@ -92,51 +97,55 @@ export default function SearchPage() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <h1 className="mr-4 hidden md:inline-block text-xl font-bold">
-            Media Search
-          </h1>
+    <div className="min-h-screen container mx-auto px-8 pt-36 space-y-6">
+      <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 space-y-4">
+        <h1 className="hidden md:inline-block text-center text-2xl font-bold w-full">
+          Media Search
+        </h1>
+        <div className="container flex h-14 items-center gap-4 max-w-4xl mx-auto">
           <div className="flex flex-1 items-center space-x-2">
-            <div className="w-full md:w-[300px] lg:w-[400px] relative">
+            <div className="w-full relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search movies and TV shows..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 rounded-lg"
               />
             </div>
-            <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="hidden md:flex">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filters
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <SheetHeader>
-                  <SheetTitle>Filters</SheetTitle>
-                </SheetHeader>
-                <FilterContent />
-              </SheetContent>
-            </Sheet>
           </div>
+          {/* <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" className="md:hidden">
+                <Filter className="mr-2 h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetHeader>
+                <SheetTitle>Filters</SheetTitle>
+              </SheetHeader>
+              <FilterContent />
+            </SheetContent>
+          </Sheet> */}
+          <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="hidden md:flex" size="lg">
+                <Filter className="mr-2 h-4 w-4" />
+                Filters
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent side="bottom" className="w-[300px] sm:w-[400px]">
+              <FilterContent />
+            </PopoverContent>
+          </Popover>
         </div>
       </header>
       <main className="container py-6">
         <div className="flex flex-col md:flex-row gap-6">
-          <aside className="md:w-[300px] lg:w-[400px]">
-            <div className="sticky top-[73px] pb-4">
-              <h2 className="text-lg font-semibold mb-4 md:mb-6">Filters</h2>
-              <FilterContent />
-            </div>
-          </aside>
           <div className="flex-1">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Results</h2>
+              <h2 className="text-xl font-bold">Results</h2>
               <p className="text-sm text-muted-foreground">
                 {filteredMedia.length} items found
               </p>

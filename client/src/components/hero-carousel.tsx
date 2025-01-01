@@ -6,7 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { Genre, MediaItem } from "@/types/media";
+import { Genre, Movie, TVShow } from "@/types/media";
 import { Pagination } from "@/types/shared";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,9 +15,10 @@ import { getYear } from "@/lib/utils";
 import { Star } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import * as React from "react";
+import Link from "next/link";
 
 type Trending = {
-  results: MediaItem[];
+  results: TVShow[] | Movie[];
 } & Pagination;
 
 type HeroCarouselProps = {
@@ -72,7 +73,7 @@ export function HeroCarousel({ data, genres, length = 5 }: HeroCarouselProps) {
 }
 
 type AnimatedCarouselItemProps = {
-  media: MediaItem;
+  media: Movie | TVShow;
   genres: Genre[];
 };
 
@@ -84,7 +85,7 @@ const fadeInUp = {
     transition: {
       delay: i * 0.1,
       duration: 0.5,
-      ease: [0.6, -0.05, 0.01, 0.99],
+      ease: [0.33, 1, 0.68, 1],
     },
   }),
 };
@@ -104,7 +105,11 @@ const AnimatedCarouselItem = ({ media, genres }: AnimatedCarouselItemProps) => {
   const backdrop_path = `${appConfig.imageBaseURL}${media.backdrop_path}`;
 
   const ref = React.useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.3 });
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
+
+  const title = "title" in media ? media.title : media.name;
+  const date =
+    "release_date" in media ? media.release_date : media.first_air_date;
 
   return (
     <CarouselItem key={media.id} className="min-h-svh relative overflow-hidden">
@@ -163,7 +168,7 @@ const AnimatedCarouselItem = ({ media, genres }: AnimatedCarouselItemProps) => {
                   custom={1}
                   className="text-4xl md:text-6xl font-extrabold"
                 >
-                  {media.name || media.title}
+                  {title}
                 </motion.h1>
 
                 <motion.div
@@ -186,9 +191,7 @@ const AnimatedCarouselItem = ({ media, genres }: AnimatedCarouselItemProps) => {
                     />
                   </motion.span>
                   <span className="size-1 bg-paragraph/70 rounded-full" />
-                  <p className="text-paragraph/90 text-lg">
-                    {getYear(media.release_date || media.first_air_date)}
-                  </p>
+                  <p className="text-paragraph/90 text-lg">{getYear(date)}</p>
                 </motion.div>
               </motion.div>
 
@@ -200,15 +203,23 @@ const AnimatedCarouselItem = ({ media, genres }: AnimatedCarouselItemProps) => {
                 {media.overview}
               </motion.p>
 
-              <motion.div
-                variants={fadeInUp}
-                custom={4}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button className="text-base h-12 w-fit px-10">
-                  More Details
-                </Button>
+              <motion.div variants={fadeInUp} custom={4}>
+                <Link href={`/${media.media_type}/${media.id}`}>
+                  <Button
+                    className="relative overflow-hidden group hover:scale-105 transition-transform duration-400 ease-in"
+                    size="lg"
+                  >
+                    <span
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 h-0 
+                     group-hover:w-[500px] group-hover:h-[500px] 
+                     bg-white rounded-full 
+                     transition-all duration-500 ease-in"
+                    />
+                    <span className="relative z-10 group-hover:text-black text-white transition-all delay-200 flex gap-x-2 text-base items-center ease-in">
+                      More Details
+                    </span>
+                  </Button>
+                </Link>
               </motion.div>
 
               {media.adult && (

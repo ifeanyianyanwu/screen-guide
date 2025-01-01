@@ -17,6 +17,11 @@ export const getAllTrending = async <T>(timeWindow: string): Promise<T> => {
 };
 
 // Movies
+export const getTrendingMovies = async <T>(timeWindow: string): Promise<T> => {
+  const response = await apiClient.get(`trending/movie/${timeWindow}`);
+  return response.data;
+};
+
 export const getMoviesGenres = async <T>(): Promise<T> => {
   const response = await apiClient.get("genre/movie/list");
   return response.data;
@@ -37,63 +42,68 @@ export const getPopularMovies = async <T>(): Promise<T> => {
   return response.data;
 };
 
-export const getNowPlayingMovies = async () => {
+export const getNowPlayingMovies = async <T>(): Promise<T> => {
   const response = await apiClient.get("movie/now_playing");
   return response.data;
 };
 
-export const getMovieDetails = async (id: number) => {
+export const getMovieDetails = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`movie/${id}`);
   return response.data;
 };
 
-export const getMovieCast = async (id: number) => {
+export const getMovieCredits = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`movie/${id}/credits`);
   return response.data;
 };
 
-export const getMovieTrailers = async (id: number) => {
+export const getMovieTrailers = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`movie/${id}/videos`);
   return response.data;
 };
 
-export const getWatchProviders = async (id: number) => {
+export const getWatchProviders = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`movie/${id}/watch/providers`);
   return response.data;
 };
 
-export const getMovieReviews = async (id: number) => {
+export const getMovieReviews = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`movie/${id}/reviews`);
   return response.data;
 };
 
-export const getSimilarMovies = async (id: number) => {
+export const getSimilarMovies = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`movie/${id}/similar`);
   return response.data;
 };
 
 // TV Shows
-export const getTvDetails = async (id: number) => {
+export const getTrendingTvShows = async <T>(timeWindow: string): Promise<T> => {
+  const response = await apiClient.get(`trending/tv/${timeWindow}`);
+  return response.data;
+};
+
+export const getTvDetails = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`tv/${id}`);
   return response.data;
 };
 
-export const getTvCast = async (id: number) => {
+export const getTvCredits = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`tv/${id}/credits`);
   return response.data;
 };
 
-export const getTvTrailers = async (id: number) => {
+export const getTvTrailers = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`tv/${id}/videos`);
   return response.data;
 };
 
-export const getTvReviews = async (id: number) => {
+export const getTvReviews = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`tv/${id}/reviews`);
   return response.data;
 };
 
-export const getSimilarShows = async (id: number) => {
+export const getSimilarShows = async <T>(id: number): Promise<T> => {
   const response = await apiClient.get(`tv/${id}/similar`);
   return response.data;
 };
@@ -108,17 +118,17 @@ export const getAiringTv = async <T>(): Promise<T> => {
   return response.data;
 };
 
-export const getTvOnTheAir = async () => {
+export const getTvOnTheAir = async <T>(): Promise<T> => {
   const response = await apiClient.get("tv/on_the_air");
   return response.data;
 };
 
-export const getPopularTv = async () => {
+export const getPopularTv = async <T>(): Promise<T> => {
   const response = await apiClient.get("tv/popular");
   return response.data;
 };
 
-export const getTopRatedTv = async () => {
+export const getTopRatedTv = async <T>(): Promise<T> => {
   const response = await apiClient.get("tv/top_rated");
   return response.data;
 };

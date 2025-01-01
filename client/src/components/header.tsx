@@ -1,15 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, Search, Menu } from "lucide-react";
+import { User, Search, Menu, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,9 +31,9 @@ export function Header() {
   }, [scrolled]);
 
   const navItems = [
-    { name: "Home", href: "#" },
-    { name: "Movies", href: "#" },
-    { name: "Tv", href: "#" },
+    { name: "Home", href: "/" },
+    { name: "Movies", href: "/movie" },
+    { name: "Tv", href: "/tv" },
   ];
 
   return (
@@ -41,9 +45,11 @@ export function Header() {
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
         <div className="flex items-center">
           <Link
-            className={`transition-all duration-300 ease-in-out ${
-              scrolled ? "w-28" : "w-32"
-            }`}
+            className={cn(
+              `transition-all duration-300 ease-in-out`,
+              scrolled ? "w-24" : "w-28",
+              pathname === "/" && "text-primary underline"
+            )}
             href="/"
           >
             <Image
@@ -58,22 +64,38 @@ export function Header() {
         <nav className="hidden md:block">
           <ul className="flex space-x-4">
             {navItems.map((item) => (
-              <li key={item.name}>
-                <a
+              <li key={item.name} className="overflow-hidden rounded-md p-1.5">
+                <Link
                   href={item.href}
-                  className="text-foreground hover:text-primary"
+                  className={cn("text-foreground relative group")}
                 >
-                  {item.name}
-                </a>
+                  <span
+                    className={cn(
+                      "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 h-0 group-hover:w-[300px] group-hover:h-[300px] backdrop-blur-lg bg-foreground/20 rounded-full transition-all duration-300 ease-in",
+                      pathname === item.href && "h-[300px] w-[300px]"
+                    )}
+                  />
+                  <span className="relative z-10 flex gap-x-2 text-sm items-center ease-in font-semibold hover:scale-105 transition-transform duration-300">
+                    {item.name}
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>
         </nav>
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon">
-            <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
-          </Button>
+          <Link href="/search">
+            <Button variant="ghost" size="icon">
+              <Search className="h-5 w-5" />
+              <span className="sr-only">Search</span>
+            </Button>
+          </Link>
+          <Link href="/watch-list">
+            <Button variant="ghost" size="icon">
+              <Heart className="h-5 w-5" />
+              <span className="sr-only">Watch List</span>
+            </Button>
+          </Link>
           <Button variant="ghost" size="icon">
             <User className="h-5 w-5" />
             <span className="sr-only">User account</span>
