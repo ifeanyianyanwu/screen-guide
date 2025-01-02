@@ -9,13 +9,13 @@ import {
 } from "@/api";
 import { HeroCarousel } from "@/components/hero-carousel";
 import { SectionCarousel } from "@/components/section-carousel";
-import { Genres, MediaItem } from "@/types/media";
+import { Genres, Movie, TVShow } from "@/types/media";
 import { Pagination } from "@/types/shared";
 import React from "react";
 import MovieCardSection from "@/components/movie-card-section";
 
 type Media = {
-  results: MediaItem[];
+  results: Movie[] | TVShow[];
 } & Pagination;
 
 export default async function Home() {

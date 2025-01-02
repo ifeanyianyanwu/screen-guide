@@ -71,13 +71,12 @@ export const StandardCard = ({
             </motion.div>
           </div>
           <div className="mt-4 grid content-start gap-y-2">
-            <h2 className="text-lg font-semibold">{title}</h2>
+            <h2 className="text-lg font-semibold line-clamp-2">{title}</h2>
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <span>{getYear(date)}</span>
               <span className="w-1 h-1 rounded-full bg-gray-400" />
               <span>
-                {genres[media.genre_ids[media.genre_ids.length - 1]]?.name ||
-                  "Drama"}
+                {genres[media.genre_ids?.[media.genre_ids.length - 1]]?.name}
               </span>
             </div>
           </div>

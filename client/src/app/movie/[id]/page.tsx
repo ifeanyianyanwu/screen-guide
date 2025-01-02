@@ -42,15 +42,19 @@ export default async function MovieDetailsPage({
   ]);
   const genres = [...tvGenres.genres, ...movieGenres.genres];
 
-  const backdrop_path = `${appConfig.imageBaseURL}${details.backdrop_path}`;
-  const poster_path = `${appConfig.imageBaseURL}${details.poster_path}`;
+  const poster_path = details.poster_path
+    ? `${appConfig.imageBaseURL}${details.poster_path}`
+    : null;
+  const backdrop_path = details.backdrop_path
+    ? `${appConfig.imageBaseURL}${details.backdrop_path}`
+    : null;
 
   return (
     <main className="space-y-14 pb-14 lg:space-y-20 lg:pb-20">
       <section className="relative min-h-screen grid place-items-center pt-14">
         <div className="absolute inset-0 bg-black/60 bg-blend-overlay -z-10 backdrop-blur-lg" />
         <Image
-          src={backdrop_path}
+          src={backdrop_path || ""}
           alt={details.title}
           fill
           className="absolute inset-0 object-cover -z-20"
@@ -59,7 +63,7 @@ export default async function MovieDetailsPage({
         <div className="container mx-auto px-4 py-20 flex flex-col lg:flex-row gap-20 items-start">
           <div className="relative w-full max-w-[400px] mx-auto lg:mx-0">
             <Image
-              src={poster_path}
+              src={poster_path || ""}
               alt={details.title}
               width={400}
               height={550}
@@ -67,7 +71,7 @@ export default async function MovieDetailsPage({
               priority
             />
             <Image
-              src={backdrop_path}
+              src={backdrop_path || ""}
               alt={details.title}
               width={400}
               height={550}
@@ -179,7 +183,7 @@ export default async function MovieDetailsPage({
             <iframe
               src={`https://www.youtube.com/embed/${
                 trailer.results.filter((result) => result.type === "Trailer")[0]
-                  .key
+                  ?.key
               }`}
               className="w-full h-full"
               allowFullScreen

@@ -140,17 +140,17 @@ export const getCountries = async () => {
 };
 
 // Search
-export const searchAll = async (args: SearchArgs) => {
+export const searchAll = async <T>(args: SearchArgs): Promise<T> => {
   const response = await apiClient.get("search/multi", { params: args });
   return response.data;
 };
 
-export const searchMovie = async (args: SearchArgs) => {
+export const searchMovie = async <T>(args: SearchArgs): Promise<T> => {
   const response = await apiClient.get("search/movie", { params: args });
   return response.data;
 };
 
-export const searchShow = async (args: SearchArgs) => {
+export const searchShow = async <T>(args: SearchArgs): Promise<T> => {
   const response = await apiClient.get("search/tv", { params: args });
   return response.data;
 };

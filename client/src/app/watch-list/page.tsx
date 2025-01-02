@@ -36,46 +36,53 @@ const items: MediaItem[] = [
 
 export default async function WatchList() {
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 p-4 pt-36">
-      {items.map((item) => (
-        <div
-          key={item.id}
-          className="flex items-center gap-4 p-4 rounded-xl bg-gray-900/50 hover:bg-gray-900/70 transition-colors"
-        >
-          <div className="relative w-16 h-16 flex-shrink-0">
-            <Image
-              src={item.thumbnail}
-              alt={item.title}
-              fill
-              className="object-cover rounded-md"
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-base font-medium text-white truncate">
-              {item.title}
-            </h3>
-            {item.type === "media" ? (
-              <div className="flex items-center gap-2 text-sm text-gray-400">
-                <span>{item.rating}</span>
-                <span>•</span>
-                <span>{item.year}</span>
-                <span>•</span>
-                <span>{item.duration}</span>
-              </div>
-            ) : (
-              <p className="text-sm text-gray-400">{item.subtitle}</p>
-            )}
-          </div>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="flex-shrink-0 text-gray-400 hover:text-white"
+    <div className="w-full max-w-4xl mx-auto pt-32 md:pt-36 space-y-8">
+      <header>
+        <h1 className="hidden md:inline-block text-center text-2xl font-bold w-full">
+          Watch List
+        </h1>
+      </header>
+      <main className="space-y-6 px-4">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className="flex items-center gap-4 p-4 rounded-xl bg-gray-900/50 hover:bg-gray-900/70 transition-colors"
           >
-            <Heart className="h-5 w-5" />
-            <span className="sr-only">Add to favorites</span>
-          </Button>
-        </div>
-      ))}
+            <div className="relative w-16 h-16 flex-shrink-0">
+              <Image
+                src={item.thumbnail}
+                alt={item.title}
+                fill
+                className="object-cover rounded-md"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-medium text-white truncate">
+                {item.title}
+              </h3>
+              {item.type === "media" ? (
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <span>{item.rating}</span>
+                  <span>•</span>
+                  <span>{item.year}</span>
+                  <span>•</span>
+                  <span>{item.duration}</span>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">{item.subtitle}</p>
+              )}
+            </div>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="flex-shrink-0 text-gray-400 hover:text-white"
+            >
+              <Heart className="h-5 w-5" />
+              <span className="sr-only">Add to favorites</span>
+            </Button>
+          </div>
+        ))}
+      </main>
     </div>
   );
 }

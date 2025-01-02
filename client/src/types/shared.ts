@@ -7,6 +7,7 @@ export type Pagination = {
 export type SearchArgs = {
   query: string;
   include_adult: boolean;
+  page: number;
   primary_release_year?: string;
   first_air_date_year?: string;
 };

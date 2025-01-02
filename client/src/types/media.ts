@@ -7,7 +7,7 @@ export type TrendingMedia = {
   original_name?: string;
   overview: string;
   poster_path: string;
-  media_type: "movie" | "tv";
+  media_type: "movie" | "tv" | "person";
   adult: boolean;
   original_language: string;
   genre_ids: number[];
@@ -154,7 +154,7 @@ interface Media {
   id: number;
   overview: string;
   poster_path: string;
-  media_type: "movie" | "tv";
+  media_type: "movie" | "tv" | "person";
   adult: boolean;
   original_language: string;
   genre_ids: number[];
