@@ -1,11 +1,10 @@
 "use server";
 
 import { addToWatchList, removeFromWatchList } from "@/api/server";
-import { signIn, signUp } from "@/auth";
+import { signIn, signUp, verifyJwt } from "@/auth";
 import { TWatchListItemSchema } from "@screen-guide/types";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export async function signInAction(_currentState: unknown, formData: FormData) {
   try {
@@ -69,11 +68,27 @@ export async function addToWatchlistAction(
 export async function logout() {
   //Destroy the session
   cookies().set("session", "");
-  redirect("/");
+  // redirect("/");
 }
+
+type Invalid = {
+  isValid: false;
+  session: undefined;
+};
+type Valid = {
+  isValid: true;
+  session: string;
+};
 
 export async function getSession() {
   const session = cookies().get("session")?.value;
-  if (!session) return null;
-  return session;
+
+  if (!session) return { isValid: false, session } as Invalid;
+
+  const isValid = await verifyJwt(session);
+  if (isValid) {
+    return { isValid, session } as Valid;
+  }
+
+  return { isValid: false, session: undefined } as Invalid;
 }

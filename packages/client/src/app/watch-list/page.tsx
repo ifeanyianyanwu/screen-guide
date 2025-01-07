@@ -10,9 +10,9 @@ import { RemoveFromWatchlist } from "./_components/remove-from-watchlist";
 export default async function WatchList() {
   const session = await getSession();
 
-  if (!session) return <LoggedOutState />;
+  if (!session.isValid) return <LoggedOutState />;
 
-  const watchList = await getWatchList(session);
+  const watchList = await getWatchList(session.session);
 
   return (
     <div className="w-full max-w-4xl mx-auto pt-32 md:pt-36 space-y-8">
@@ -61,7 +61,7 @@ export default async function WatchList() {
                   </div>
                 )}
               </div>
-              <RemoveFromWatchlist session={session} id={item._id} />
+              <RemoveFromWatchlist session={session.session} id={item._id} />
             </div>
           );
         })}

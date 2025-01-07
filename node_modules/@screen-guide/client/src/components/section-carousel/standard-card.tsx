@@ -32,6 +32,10 @@ export const StandardCard = ({
   const date =
     "release_date" in media ? media.release_date : media.first_air_date;
 
+  const genre = genres?.find(
+    (genre) => genre.id === media.genre_ids?.[media.genre_ids?.length - 1]
+  ) || { name: "" };
+
   return (
     <Link href={`/${mediaType}/${media.id}`}>
       <AnimatedCard
@@ -46,7 +50,7 @@ export const StandardCard = ({
           <div className="relative aspect-video md:aspect-[3/4] overflow-hidden rounded-xl">
             <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-md">
               <span className="font-semibold text-sm">
-                {media.vote_average.toFixed(1)}
+                {media.vote_average?.toFixed(1)}
               </span>
             </div>
             <motion.div
@@ -75,9 +79,7 @@ export const StandardCard = ({
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <span>{getYear(date)}</span>
               <span className="w-1 h-1 rounded-full bg-gray-400" />
-              <span>
-                {genres[media.genre_ids?.[media.genre_ids.length - 1]]?.name}
-              </span>
+              <span>{genre.name}</span>
             </div>
           </div>
         </CardContent>

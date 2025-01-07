@@ -23,7 +23,6 @@ export const isAuthenticated: ExpressRouteHandler = (req, res, next) => {
     return;
   }
   try {
-    console.log("validatedToken");
     const validatedToken = jwt.verify(
       token,
       config.jwt.secret
