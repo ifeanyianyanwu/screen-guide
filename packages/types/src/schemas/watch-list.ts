@@ -7,6 +7,7 @@ export const WatchListItemSchema = z.object({
   releaseDate: z.string(),
   duration: z.string().optional(),
   type: z.string(),
+  mediaId: z.number(),
 });
 
 export const RemoveWatchListItemParamsSchema = z.object({

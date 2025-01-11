@@ -3,10 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "client": "cd packages && cd client && npm run dev",
-    "server": "cd packages && cd server && npm start"
+    "client": "cd apps && cd client && npm run dev",
+    "server": "cd apps && cd server && npm start"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ]
 }
