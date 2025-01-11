@@ -51,7 +51,7 @@ export const handleApiError = (
 };
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: appConfig.customApiUrl || "http://localhost:8080",
+  baseURL: appConfig.expressServerBaseUrl || "http://localhost:8080",
   headers: {
     Accept: "application/json",
   },

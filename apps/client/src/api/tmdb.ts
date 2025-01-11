@@ -3,7 +3,7 @@ import { SearchArgs } from "@/types/shared";
 import axios, { AxiosInstance } from "axios";
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: appConfig.baseURL,
+  baseURL: appConfig.tmdbBaseURL,
   headers: {
     Authorization: `Bearer ${appConfig.apiToken}`,
     Accept: "application/json",
