@@ -8,6 +8,7 @@ interface Config {
   server: {
     port: number;
     nodeEnv: "development" | "production" | "test";
+    corsOrigin: string;
   };
   jwt: {
     secret: string;
@@ -32,9 +33,10 @@ function requireEnvVar(name: string): string {
 // Create and validate config object
 export const config: Config = {
   server: {
-    port: parseInt(process.env.PORT || "3000", 10),
+    port: parseInt(process.env.PORT || "8000", 10),
     nodeEnv: (process.env.NODE_ENV ||
       "development") as Config["server"]["nodeEnv"],
+    corsOrigin: process.env.CORS_ORIGIN || "http://localhost:3000",
   },
   jwt: {
     secret: requireEnvVar("JWT_SECRET"),
