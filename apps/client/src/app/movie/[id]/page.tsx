@@ -60,10 +60,10 @@ export default async function MovieDetailsPage({
   );
 
   const posterPath = details.poster_path
-    ? `${appConfig.imageBaseURL}${details.poster_path}`
+    ? `${appConfig.tmdbImageBaseURL}${details.poster_path}`
     : null;
   const backdropPath = details.backdrop_path
-    ? `${appConfig.imageBaseURL}${details.backdrop_path}`
+    ? `${appConfig.tmdbImageBaseURL}${details.backdrop_path}`
     : null;
 
   return (
@@ -263,7 +263,7 @@ export default async function MovieDetailsPage({
           <div className="space-y-8">
             {reviews.results.slice(0, 4).map((review) => {
               const imageSrc = review.author_details.avatar_path
-                ? `${appConfig.imageBaseURL}${review.author_details.avatar_path}`
+                ? `${appConfig.tmdbImageBaseURL}${review.author_details.avatar_path}`
                 : null;
               return (
                 <div className="space-y-4" key={review.id}>

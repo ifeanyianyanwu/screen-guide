@@ -38,7 +38,7 @@ export async function signUp(formData: FormData) {
 }
 
 export async function verifyJwt(input: string) {
-  const secret = appConfig.authSecret;
+  const secret = appConfig.serverJwtSecret;
   if (!secret) {
     throw new Error("AUTH_SECRET is not defined");
   }

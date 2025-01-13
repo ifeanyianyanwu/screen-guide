@@ -22,10 +22,10 @@ export const StandardCard = ({
   isInView: boolean;
 }) => {
   const poster_path = media.poster_path
-    ? `${appConfig.imageBaseURL}${media.poster_path}`
+    ? `${appConfig.tmdbImageBaseURL}${media.poster_path}`
     : null;
   const backdrop_path = media.backdrop_path
-    ? `${appConfig.imageBaseURL}${media.backdrop_path}`
+    ? `${appConfig.tmdbImageBaseURL}${media.backdrop_path}`
     : null;
 
   const title = "title" in media ? media.title : media.name;

@@ -5,7 +5,7 @@ import axios, { AxiosInstance } from "axios";
 const apiClient: AxiosInstance = axios.create({
   baseURL: appConfig.tmdbBaseURL,
   headers: {
-    Authorization: `Bearer ${appConfig.apiToken}`,
+    Authorization: `Bearer ${appConfig.tmdbApiToken}`,
     Accept: "application/json",
   },
 });

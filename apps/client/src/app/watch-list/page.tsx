@@ -25,7 +25,7 @@ export default async function WatchList() {
           <EmptyWatchList />
         ) : (
           watchList.data.items.map((item) => {
-            const imageUrl = `${appConfig.imageBaseURL}${item.imageUrl}`;
+            const imageUrl = `${appConfig.tmdbImageBaseURL}${item.imageUrl}`;
             return (
               <div
                 key={item._id}

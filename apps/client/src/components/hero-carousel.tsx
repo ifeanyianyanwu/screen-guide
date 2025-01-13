@@ -102,7 +102,7 @@ const staggerContainer = {
 };
 
 const AnimatedCarouselItem = ({ media, genres }: AnimatedCarouselItemProps) => {
-  const backdrop_path = `${appConfig.imageBaseURL}${media.backdrop_path}`;
+  const backdrop_path = `${appConfig.tmdbImageBaseURL}${media.backdrop_path}`;
 
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });

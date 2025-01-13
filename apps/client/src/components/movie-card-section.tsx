@@ -52,7 +52,7 @@ export default function MovieCardSection({
     margin: "0px 0px -10% 0px",
   });
 
-  const poster_path = `${appConfig.imageBaseURL}${data.backdrop_path}`;
+  const poster_path = `${appConfig.tmdbImageBaseURL}${data.backdrop_path}`;
   const title = "title" in data ? data.title : data.name;
   const date = "release_date" in data ? data.release_date : data.first_air_date;
 

@@ -24,7 +24,7 @@ export const DetailedCard = ({
   isInView: boolean;
 }) => {
   const backdrop_path = media.backdrop_path
-    ? `${appConfig.imageBaseURL}${media.backdrop_path}`
+    ? `${appConfig.tmdbImageBaseURL}${media.backdrop_path}`
     : null;
 
   const title = "title" in media ? media.title : media.name;
