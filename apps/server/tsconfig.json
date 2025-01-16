@@ -12,7 +12,7 @@
     "noImplicitAny": true,
     "skipLibCheck": true,
     "paths": {
-      "@screen-guide/types": ["../../packages/types/src"]
+      "@screen-guide/types": ["../../packages/types/src/index.ts"]
     },
     "typeRoots": ["./node_modules/@types", "../../node_modules/@types"]
   },
