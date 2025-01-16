@@ -9,3 +9,16 @@ export type ExpressRouteHandler = (
   res: Response,
   next: NextFunction
 ) => Promise<Response | void> | void;
+
+export interface User {
+  email: string;
+  password: string;
+  watchList: {
+    items: {
+      name: string;
+      imageUrl: string;
+      rating: number;
+      releaseDate: string;
+    }[];
+  };
+}

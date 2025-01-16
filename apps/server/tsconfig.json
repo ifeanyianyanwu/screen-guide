@@ -10,11 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true,
-    "paths": {
-      "@screen-guide/types": ["../../packages/types/dist"]
-    },
-    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"]
+    "skipLibCheck": true
   },
   "include": ["src/**/*"]
 }

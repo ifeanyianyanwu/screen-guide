@@ -1,7 +1,7 @@
 import { createUser, getUserByEmail } from "../database/models/user.model";
 import { ExpressRouteHandler } from "../types";
 import bcrypt from "bcryptjs";
-import { SigninSchema, SignupSchema } from "@screen-guide/types";
+import { SigninSchema, SignupSchema } from "../schemas/auth";
 import jwt from "jsonwebtoken";
 import config from "../config";
 

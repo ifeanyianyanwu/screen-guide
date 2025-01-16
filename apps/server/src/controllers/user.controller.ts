@@ -3,9 +3,8 @@ import { sendErrorResponse } from "../helpers";
 import {
   RemoveWatchListItemParamsSchema,
   WatchListItemSchema,
-  User,
-} from "@screen-guide/types";
-import { ExpressRouteHandler } from "../types";
+} from "../schemas/watch-list";
+import { ExpressRouteHandler, User } from "../types";
 
 export const addToWatchList: ExpressRouteHandler = async (req, res) => {
   try {
