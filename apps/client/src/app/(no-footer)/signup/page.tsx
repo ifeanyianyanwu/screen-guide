@@ -3,32 +3,33 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signInAction } from "@/lib/actions";
+import { signUpAction } from "@/lib/actions";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
+import { toast } from "sonner";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const router = useRouter();
-  const [state, dispatch] = useFormState(signInAction, undefined);
+  const [state, dispatch] = useFormState(signUpAction, undefined);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (state?.success) {
+      toast.success("Signed up successfully");
       router.push("/");
     }
   }, [state, router]);
 
   return (
-    <div className="flex min-h-screen bg-[#120f10] text-[#f2f7fc]">
-      <div className="m-auto w-full max-w-md space-y-8 rounded-xl bg-[#120f10] p-10 shadow-xl">
+    <div className="flex min-h-svh pt-20">
+      <div className="m-auto w-full max-w-md space-y-8 rounded-xl px-4">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold">Welcome back</h2>
-          <p className="mt-2 text-sm text-[#bcc0c7]">
-            Please sign in to your account
-          </p>
+          <h2 className="mt-6 text-3xl font-bold">Create an account</h2>
+          <p className="mt-2 text-sm text-[#bcc0c7]">Sign up to get started</p>
         </div>
         <form className="mt-8 space-y-6" action={dispatch}>
           <div className="space-y-4 rounded-md shadow-sm">
@@ -58,11 +59,12 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
                   className="relative block w-full appearance-none rounded-md border border-[#2e3441] bg-[#120f10] px-3 py-2 text-[#f2f7fc] placeholder-[#bcc0c7] focus:z-10 focus:border-[#3b82f6] focus:outline-none focus:ring-[#3b82f6] sm:text-sm"
                   placeholder="Password"
                 />
+
                 <Button
                   type="button"
                   variant="ghost"
@@ -81,31 +83,38 @@ export default function LoginPage() {
                 </Button>
               </div>
             </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 rounded border-[#2e3441] bg-[#120f10] text-[#3b82f6] focus:ring-[#3b82f6]"
-              />
-              <Label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-[#bcc0c7]"
-              >
-                Remember me
+            <div>
+              <Label htmlFor="confirmPassword" className="sr-only">
+                Confirm Password
               </Label>
-            </div>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  className="relative block w-full appearance-none rounded-md border border-[#2e3441] bg-[#120f10] px-3 py-2 text-[#f2f7fc] placeholder-[#bcc0c7] focus:z-10 focus:border-[#3b82f6] focus:outline-none focus:ring-[#3b82f6] sm:text-sm"
+                  placeholder="Confirm Password"
+                />
 
-            <div className="text-sm">
-              <a
-                href="#"
-                className="font-medium text-[#3b82f6] hover:text-[#60a5fa]"
-              >
-                Forgot your password?
-              </a>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 text-[#bcc0c7]" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-[#bcc0c7]" />
+                  )}
+                  <span className="sr-only">
+                    {showConfirmPassword ? "Hide password" : "Show password"}
+                  </span>
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -116,7 +125,7 @@ export default function LoginPage() {
           )}
 
           <div>
-            <LoginButton />
+            <SignUpButton />
           </div>
         </form>
 
@@ -143,19 +152,19 @@ export default function LoginPage() {
                   fill="currentColor"
                 />
               </svg>
-              Login with Google
+              Sign up with Google
             </Button>
           </div>
         </div>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-[#bcc0c7]">
-            Don&apos;t have an account?{" "}
+            Already have an account?{" "}
             <Link
-              href="/signup"
+              href="/signin"
               className="font-medium text-[#3b82f6] hover:text-[#60a5fa]"
             >
-              Sign up
+              Sign in
             </Link>
           </p>
         </div>
@@ -164,7 +173,7 @@ export default function LoginPage() {
   );
 }
 
-function LoginButton() {
+function SignUpButton() {
   const { pending } = useFormStatus();
 
   return (
@@ -174,7 +183,7 @@ function LoginButton() {
       aria-disabled={pending}
       disabled={pending}
     >
-      {pending ? "Logging in..." : "Sign in"}
+      {pending ? "Signing up..." : "Sign up"}
     </Button>
   );
 }

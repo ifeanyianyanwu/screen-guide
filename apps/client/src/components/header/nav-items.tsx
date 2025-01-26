@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export const navItems = [
   { name: "Home", href: "/" },
   { name: "Movies", href: "/movie" },
-  { name: "Tv", href: "/tv" },
+  { name: "Tv Shows", href: "/tv" },
 ];
 
 export function NavItems() {

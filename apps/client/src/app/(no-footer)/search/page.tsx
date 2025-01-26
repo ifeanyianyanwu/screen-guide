@@ -264,12 +264,10 @@ export default function SearchPage() {
     [handlePageChange]
   );
 
-  console.log(searchResults);
-
   return (
-    <div className="min-h-screen container mx-auto px-4 pt-28 md:pt-36 space-y-6 pb-8">
+    <div className="min-h-svh container mx-auto px-4 pt-28 md:pt-36 space-y-6 pb-14 md:pb-16">
       <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 space-y-4">
-        <h1 className="hidden md:inline-block text-center text-2xl font-bold w-full">
+        <h1 className="hidden md:inline-block text-center text-3xl font-bold w-full">
           Media Search
         </h1>
         <div className="container flex h-14 items-center gap-4 max-w-4xl mx-auto">
@@ -284,7 +282,7 @@ export default function SearchPage() {
               )}
               <Input
                 type="text"
-                placeholder="Search movies and TV shows..."
+                placeholder="Search Movies and TV shows..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 rounded-lg h-10"

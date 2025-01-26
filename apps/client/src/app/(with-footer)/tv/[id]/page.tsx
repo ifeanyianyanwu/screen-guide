@@ -1,11 +1,11 @@
 import {
-  getMovieCredits,
-  getMovieDetails,
-  getMovieReviews,
   getMoviesGenres,
-  getMovieTrailers,
-  getSimilarMovies,
+  getSimilarShows,
+  getTvCredits,
+  getTvDetails,
   getTvGenres,
+  getTvReviews,
+  getTvTrailers,
 } from "@/api/tmdb";
 import { SectionCarousel } from "@/components/section-carousel";
 import { ToggleWatchlist } from "@/components/toggle-watchlist";
@@ -15,7 +15,7 @@ import { getSession, getWatchlistStatus } from "@/lib/actions";
 import { appConfig } from "@/lib/config";
 import { formatDateTime, getYear } from "@/lib/utils";
 import { Credits } from "@/types/credits";
-import { Genres, Movie, MovieDetails } from "@/types/media";
+import { Genres, TVShow, TVShowDetails } from "@/types/media";
 import { Reviews } from "@/types/reviews";
 import { Pagination } from "@/types/shared";
 import { Trailers } from "@/types/trailers";
@@ -24,14 +24,14 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-type MovieDetailsPageProps = { params: { id: string } };
+type TvShowDetailsPageProps = { params: { id: string } };
 type Media = {
-  results: Movie[];
+  results: TVShow[];
 } & Pagination;
 
-export default async function MovieDetailsPage({
+export default async function TvShowDetailsPage({
   params: { id },
-}: MovieDetailsPageProps) {
+}: TvShowDetailsPageProps) {
   const [
     details,
     credits,
@@ -42,23 +42,22 @@ export default async function MovieDetailsPage({
     movieGenres,
     session,
   ] = await Promise.all([
-    getMovieDetails<MovieDetails>(Number(id)),
-    getMovieCredits<Credits>(Number(id)),
-    getMovieTrailers<Trailers>(Number(id)),
-    getMovieReviews<Reviews>(Number(id)),
-    getSimilarMovies<Media>(Number(id)),
+    getTvDetails<TVShowDetails>(Number(id)),
+    getTvCredits<Credits>(Number(id)),
+    getTvTrailers<Trailers>(Number(id)),
+    getTvReviews<Reviews>(Number(id)),
+    getSimilarShows<Media>(Number(id)),
     getTvGenres<Genres>(),
     getMoviesGenres<Genres>(),
     getSession(),
   ]);
-
-  const genres = [...tvGenres.genres, ...movieGenres.genres];
 
   const { isInWatchList, watchlistItemId } = await getWatchlistStatus(
     session,
     id
   );
 
+  const genres = [...tvGenres.genres, ...movieGenres.genres];
   const posterPath = details.poster_path
     ? `${appConfig.tmdbImageBaseURL}${details.poster_path}`
     : null;
@@ -67,12 +66,12 @@ export default async function MovieDetailsPage({
     : null;
 
   return (
-    <main className="space-y-14 pb-14 lg:space-y-20 lg:pb-20">
-      <section className="relative min-h-screen grid place-items-center pt-14">
+    <main className="space-y-14 lg:space-y-20 lg:pb-20 pb-16 md:pb-24">
+      <section className="relative min-h-svh grid place-items-center pt-14">
         <div className="absolute inset-0 bg-black/60 bg-blend-overlay -z-10 backdrop-blur-lg" />
         <Image
           src={backdropPath || ""}
-          alt={details.title}
+          alt={details.name}
           fill
           className="absolute inset-0 object-cover -z-20"
           priority
@@ -81,7 +80,7 @@ export default async function MovieDetailsPage({
           <div className="relative w-full max-w-[400px] mx-auto lg:mx-0">
             <Image
               src={posterPath || ""}
-              alt={details.title}
+              alt={details.name}
               width={400}
               height={550}
               className="rounded-lg object-cover w-full hidden md:block"
@@ -89,7 +88,7 @@ export default async function MovieDetailsPage({
             />
             <Image
               src={backdropPath || ""}
-              alt={details.title}
+              alt={details.name}
               width={400}
               height={550}
               className="rounded-lg object-cover w-full md:hidden"
@@ -99,13 +98,13 @@ export default async function MovieDetailsPage({
               isInWatchList={isInWatchList}
               session={session}
               media={{
-                name: details.title,
+                name: details.name,
                 imageUrl: details.poster_path,
                 rating: details.vote_average,
-                releaseDate: String(details.release_date),
-                type: "movie",
+                releaseDate: String(details.first_air_date),
+                type: "tv",
                 mediaId: details.id,
-                duration: String(details.runtime),
+                duration: undefined,
                 _id: watchlistItemId,
               }}
             />
@@ -128,7 +127,7 @@ export default async function MovieDetailsPage({
               </div>
 
               <h1 className="text-4xl font-bold text-white mb-2">
-                {details.title}
+                {details.name}
               </h1>
               <div className="flex items-center gap-6 text-paragraph/70">
                 <Badge
@@ -138,8 +137,8 @@ export default async function MovieDetailsPage({
                   {details.vote_average.toFixed(1)}
                 </Badge>
 
-                <span>{getYear(details.release_date)}</span>
-                <span>{details.runtime}&nbsp;mins</span>
+                <span>{getYear(details.first_air_date)}</span>
+                <span>{details.number_of_seasons}&nbsp;Season(s)</span>
               </div>
             </div>
             <p className="text-paragraph max-w-2xl text-lg">
@@ -157,7 +156,7 @@ export default async function MovieDetailsPage({
                 View Full Cast
               </Button>
             </div>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex gap-4">
               <Button
                 className="relative overflow-hidden bg-red-600 group hover:bg-red-600"
                 size="lg"
@@ -208,9 +207,9 @@ export default async function MovieDetailsPage({
           <div className="grid gap-8 mt-8 text-gray-300">
             <div className="space-y-4">
               <div className="flex justify-between py-2 border-b border-gray-800">
-                <span className="flex-1">Production year</span>
+                <span className="flex-1">First aired</span>
                 <span className="text-white flex-1">
-                  {getYear(details.release_date)}
+                  {getYear(details.first_air_date)}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-800">
@@ -248,10 +247,20 @@ export default async function MovieDetailsPage({
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-800">
-                <span className="flex-1">Duration</span>
+                <span className="flex-1">Number of seasons</span>
                 <span className="flex-1 text-white">
-                  {details.runtime}&nbsp;mins
+                  {details.number_of_seasons}
                 </span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-gray-800">
+                <span className="flex-1">Number of episodes</span>
+                <span className="flex-1 text-white">
+                  {details.number_of_episodes}
+                </span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-gray-800">
+                <span className="flex-1">Status</span>
+                <span className="flex-1 text-white">{details.status}</span>
               </div>
             </div>
           </div>
@@ -317,8 +326,8 @@ export default async function MovieDetailsPage({
         <SectionCarousel
           genres={genres}
           data={similar.results}
-          sectionTitle="Related Movies"
-          mediaType="movie"
+          sectionTitle="Related Tv Shows"
+          mediaType="tv"
         />
       </section>
     </main>

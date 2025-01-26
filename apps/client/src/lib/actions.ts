@@ -40,43 +40,47 @@ export async function signUpAction(_currentState: unknown, formData: FormData) {
   }
 }
 
-export async function removeFromWatchlistAction(id: string, session: string) {
+export async function removeFromWatchlistAction(
+  _currentState: unknown,
+  { id, session }: { id: string; session: string }
+) {
   try {
     await removeFromWatchList(id, session);
   } catch (error) {
     if (error) {
-      if (typeof error === "string") throw error;
-      else throw "Something went wrong.";
+      if (typeof error === "string") return { error };
+      else return { error: "Something went wrong." };
     }
     throw error;
   }
   revalidatePath("/watch-list");
   revalidatePath("/movie/[id]", "page");
   revalidatePath("/tv/[id]", "page");
+  return { success: true };
 }
 
 export async function addToWatchlistAction(
-  body: TWatchListItemSchema,
-  session: string
+  _currentState: unknown,
+  { body, session }: { body: TWatchListItemSchema; session: string }
 ) {
   try {
     await addToWatchList(body, session);
   } catch (error) {
     if (error) {
-      if (typeof error === "string") throw error;
-      else throw "Something went wrong.";
+      if (typeof error === "string") return { error };
+      else return { error: "Something went wrong." };
     }
     throw error;
   }
   revalidatePath("/watch-list");
   revalidatePath("/movie/[id]", "page");
   revalidatePath("/tv/[id]", "page");
+  return { success: true };
 }
 
 export async function logout() {
   //Destroy the session
   cookies().set("session", "");
-  // redirect("/");
 }
 
 export type InvalidSession = {

@@ -4,19 +4,24 @@ import Link from "next/link";
 
 export function LoggedOutState() {
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4">
-      <div className="w-full max-w-md text-center space-y-8">
+    <div className="container mx-auto px-4 py-28 md:py-36 space-y-14">
+      <header>
+        <h1 className="hidden md:inline-block text-center text-3xl font-semibold w-full">
+          Watch List
+        </h1>
+      </header>
+      <div className="w-full max-w-md text-center space-y-8 md:space-y-14 mx-auto">
+        <div className="mx-auto w-24 h-24 flex items-center justify-center">
+          <FilmIcon className="size-28 md:size-40 text-primary" />
+        </div>
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+          <h1 className="text-2xl font-semibold tracking-tight">
             Your Watch List Awaits!
           </h1>
-          <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+          <p className="mx-auto max-w-md text-muted-foreground">
             Sign in or create an account to start building your personalized
             movie collection.
           </p>
-        </div>
-        <div className="mx-auto w-24 h-24 flex items-center justify-center">
-          <FilmIcon className="h-16 w-16 text-primary" />
         </div>
         <div className="space-y-4">
           <Button asChild className="w-full" size="lg">

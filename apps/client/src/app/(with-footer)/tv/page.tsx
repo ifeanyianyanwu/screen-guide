@@ -30,7 +30,7 @@ export default async function TvPage() {
   const mediaType = "tv";
 
   return (
-    <main className="overflow-hidden space-y-14 lg:space-y-20">
+    <main className="overflow-hidden space-y-14 lg:space-y-20 pb-16 md:pb-24">
       <HeroCarousel genres={genres} data={trendingTvShows} />
 
       <SectionCarousel

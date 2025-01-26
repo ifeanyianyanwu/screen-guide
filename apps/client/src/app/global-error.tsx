@@ -12,7 +12,7 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body className="bg-[#120f10] text-[#f2f7fc] flex items-center justify-center min-h-screen">
+      <body className="bg-[#120f10] text-[#f2f7fc] flex items-center justify-center min-h-svh">
         <div className="max-w-md w-full space-y-8 p-10 bg-[#1c1917] rounded-xl shadow-2xl">
           <div className="flex flex-col items-center space-y-4">
             <AlertTriangle className="h-16 w-16 text-[#fca5a5]" />

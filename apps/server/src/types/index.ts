@@ -19,6 +19,9 @@ export interface User {
       imageUrl: string;
       rating: number;
       releaseDate: string;
+      type: string;
+      duration?: string;
+      mediaId: number;
     }[];
   };
 }

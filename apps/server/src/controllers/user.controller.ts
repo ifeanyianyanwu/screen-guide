@@ -25,6 +25,15 @@ export const addToWatchList: ExpressRouteHandler = async (req, res) => {
     }
 
     const watchList = user.watchList;
+
+    if (watchList.items.find((i) => i.mediaId === item.mediaId)) {
+      return sendErrorResponse(
+        res,
+        404,
+        "This media is already in your watchlist"
+      );
+    }
+
     watchList.items.push(item);
     await updateUserById(userId, { ...user, watchList });
 
@@ -59,6 +68,13 @@ export const removeFromWatchList: ExpressRouteHandler = async (req, res) => {
     const user = await getUserById(userId);
     if (!user) {
       return sendErrorResponse(res, 404, "User not found");
+    }
+
+    const watchlistItem = user.watchList!.items.filter(
+      (item) => item.id === id
+    );
+    if (!watchlistItem) {
+      return sendErrorResponse(res, 404, `No corresponding media found`);
     }
 
     const updatedWatchList = user.watchList!.items.filter(
