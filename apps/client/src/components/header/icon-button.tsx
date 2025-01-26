@@ -49,10 +49,16 @@ export function IconButton({
   if (href) {
     return (
       <Link href={href}>
-        <Button {...buttonProps}>{buttonContent}</Button>
+        <Button {...buttonProps} title={label}>
+          {buttonContent}
+        </Button>
       </Link>
     );
   }
 
-  return <Button {...buttonProps}>{buttonContent}</Button>;
+  return (
+    <Button {...buttonProps} title={label}>
+      {buttonContent}
+    </Button>
+  );
 }

@@ -43,7 +43,7 @@ export function Header({ children }: { children: ReactNode }) {
         <NavItems />
         <div className="flex items-center space-x-4">
           <IconButton href="/search" icon={Search} label="Search" />
-          <IconButton href="/watch-list" icon={Heart} label="Watch List" />
+          <IconButton href="/watch-list" icon={Heart} label="Watchlist" />
           {children}
           <Sidebar />
         </div>
