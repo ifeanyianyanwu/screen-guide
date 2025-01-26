@@ -5,6 +5,7 @@ import { getSession } from "@/lib/actions";
 import { appConfig } from "@/lib/config";
 import Image from "next/image";
 import { RemoveFromWatchlist } from "./_components/remove-from-watchlist";
+import { ErrorMessage } from "@/components/error-message";
 
 export default async function WatchList() {
   const session = await getSession();
@@ -14,7 +15,14 @@ export default async function WatchList() {
   const watchList = await getWatchList(session.session);
 
   if (!watchList.success) {
-    return "There was an error.";
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <ErrorMessage
+          title="Failed to load watch list"
+          message="We couldn't load your watch list at this time. Please try again later."
+        />
+      </div>
+    );
   }
 
   return (
