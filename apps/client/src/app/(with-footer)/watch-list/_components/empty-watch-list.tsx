@@ -1,6 +1,6 @@
+import { TransitionLink } from "@/components/transition-link";
 import { Button } from "@/components/ui/button";
 import { FilmIcon, PlusCircle } from "lucide-react";
-import Link from "next/link";
 
 export function EmptyWatchList() {
   return (
@@ -16,10 +16,10 @@ export function EmptyWatchList() {
         </p>
       </div>
       <Button asChild className="mt-4 w-full" size="lg">
-        <Link href="/search">
+        <TransitionLink href={"/search" + `?reset=${Date.now()}`}>
           <PlusCircle className="mr-2 h-10 w-10" />
           Add to Watch List
-        </Link>
+        </TransitionLink>
       </Button>
     </div>
   );

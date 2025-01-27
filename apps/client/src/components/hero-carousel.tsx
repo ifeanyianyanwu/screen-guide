@@ -15,7 +15,7 @@ import { getYear } from "@/lib/utils";
 import { Star } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import * as React from "react";
-import Link from "next/link";
+import { TransitionLink } from "./transition-link";
 
 type Trending = {
   results: TVShow[] | Movie[];
@@ -204,7 +204,11 @@ const AnimatedCarouselItem = ({ media, genres }: AnimatedCarouselItemProps) => {
               </motion.p>
 
               <motion.div variants={fadeInUp} custom={4}>
-                <Link href={`/${media.media_type}/${media.id}`}>
+                <TransitionLink
+                  href={
+                    `/${media.media_type}/${media.id}` + `?reset=${Date.now()}`
+                  }
+                >
                   <Button
                     className="relative overflow-hidden group hover:scale-105 transition-transform duration-400 ease-in"
                     size="lg"
@@ -219,7 +223,7 @@ const AnimatedCarouselItem = ({ media, genres }: AnimatedCarouselItemProps) => {
                       More Details
                     </span>
                   </Button>
-                </Link>
+                </TransitionLink>
               </motion.div>
 
               {media.adult && (

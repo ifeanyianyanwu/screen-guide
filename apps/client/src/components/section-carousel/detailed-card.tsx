@@ -12,7 +12,7 @@ import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { TransitionLink } from "../transition-link";
 
-const AnimatedCard = motion(Card);
+const AnimatedCard = motion.create(Card);
 
 export const DetailedCard = ({
   media,
@@ -30,13 +30,16 @@ export const DetailedCard = ({
   const title = "title" in media ? media.title : media.name;
 
   return (
-    <TransitionLink href={`/${media.media_type || mediaType}/${media.id}`}>
+    <TransitionLink
+      href={
+        `/${media.media_type || mediaType}/${media.id}` + `?reset=${Date.now()}`
+      }
+    >
       <AnimatedCard
         variants={cardVariants}
         custom={1}
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
-        // animate="visible"
         whileHover="hover"
         className="border-0 bg-transparent rounded-3xl overflow-hidden"
       >

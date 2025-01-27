@@ -16,7 +16,7 @@ export function NavItems() {
       <ul className="flex space-x-4">
         {navItems.map((item) => (
           <li key={item.name} className="overflow-hidden rounded-md p-1.5">
-            <TransitionLink href={item.href}>
+            <TransitionLink href={item.href + `?reset=${Date.now()}`}>
               <div className={cn("text-foreground relative group")}>
                 <span
                   className={cn(

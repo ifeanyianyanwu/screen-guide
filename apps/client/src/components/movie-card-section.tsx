@@ -76,7 +76,10 @@ export default function MovieCardSection({
             {data.genre_ids.map((id: number) => {
               const resolvedGenreName = genres.find((item) => item.id == id);
               return resolvedGenreName ? (
-                <Badge className="bg-foreground/10 hover:bg-foreground/10 backdrop-blur-lg text-white/90 text-sm">
+                <Badge
+                  className="bg-foreground/10 hover:bg-foreground/10 backdrop-blur-lg text-white/90 text-sm"
+                  key={id}
+                >
                   {resolvedGenreName.name}
                 </Badge>
               ) : undefined;

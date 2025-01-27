@@ -8,7 +8,7 @@ import Image from "next/image";
 import { getYear } from "@/lib/utils";
 import { TransitionLink } from "../transition-link";
 
-const AnimatedCard = motion(Card);
+const AnimatedCard = motion.create(Card);
 
 export const StandardCard = ({
   media,
@@ -37,7 +37,7 @@ export const StandardCard = ({
   ) || { name: "" };
 
   return (
-    <TransitionLink href={`/${mediaType}/${media.id}`}>
+    <TransitionLink href={`/${mediaType}/${media.id}` + `?reset=${Date.now()}`}>
       <AnimatedCard
         variants={cardVariants}
         custom={1}

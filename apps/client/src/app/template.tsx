@@ -1,12 +1,32 @@
 "use client";
 
 import { animatePageIn } from "@/lib/animations";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ReactNode, useEffect } from "react";
 
 export default function Template({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const resetParam = searchParams.get("reset");
+
   useEffect(() => {
     animatePageIn();
   }, []);
+
+  // Handle animation reset triggered by server components
+  useEffect(() => {
+    if (resetParam) {
+      animatePageIn();
+
+      // Clean up URL parameters after reset
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.delete("reset"); // Remove reset trigger
+
+      // Update URL without adding to browser history
+      router.replace(`${pathname}?${newParams.toString()}`);
+    }
+  }, [resetParam, router, pathname, searchParams]);
 
   return (
     <div>

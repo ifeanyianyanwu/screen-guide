@@ -43,10 +43,10 @@ export function Header({ children }: { children: ReactNode }) {
         </div>
         <NavItems />
         <div className="flex items-center space-x-4">
-          <TransitionLink href="/search">
+          <TransitionLink href={"/search" + `?reset=${Date.now()}`}>
             <IconButton icon={Search} label="Search" href="/search" />
           </TransitionLink>
-          <TransitionLink href="/watch-list">
+          <TransitionLink href={"/watch-list" + `?reset=${Date.now()}`}>
             <IconButton href="/watch-list" icon={Heart} label="Watchlist" />
           </TransitionLink>
           {children}

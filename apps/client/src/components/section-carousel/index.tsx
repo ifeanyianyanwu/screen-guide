@@ -125,7 +125,7 @@ export function SectionCarousel({
               carouselType === "overflow" ? "overflow-visible" : ""
             }
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {data
                 .slice(0, length)
                 .filter(
