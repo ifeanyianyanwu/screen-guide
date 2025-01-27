@@ -1,6 +1,6 @@
+import { TransitionLink } from "@/components/transition-link";
 import { Button } from "@/components/ui/button";
 import { FilmIcon, UserPlus } from "lucide-react";
-import Link from "next/link";
 
 export function LoggedOutState() {
   return (
@@ -24,15 +24,17 @@ export function LoggedOutState() {
           </p>
         </div>
         <div className="space-y-4">
-          <Button asChild className="w-full" size="lg">
-            <Link href="/signin">Sign In</Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full" size="lg">
-            <Link href="/signup">
+          <TransitionLink href="/signin">
+            <Button className="w-full" size="lg">
+              Sign In
+            </Button>
+          </TransitionLink>
+          <TransitionLink href="/signup">
+            <Button variant="outline" className="w-full" size="lg">
               <UserPlus className="mr-2 h-4 w-4" />
               Create Account
-            </Link>
-          </Button>
+            </Button>
+          </TransitionLink>
         </div>
       </div>
     </div>

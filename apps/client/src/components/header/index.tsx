@@ -10,6 +10,7 @@ import { Sidebar } from "./sidebar";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { NavItems } from "./nav-items";
 import { IconButton } from "./icon-button";
+import { TransitionLink } from "../transition-link";
 
 export function Header({ children }: { children: ReactNode }) {
   const scrolled = useScrolled();
@@ -42,8 +43,12 @@ export function Header({ children }: { children: ReactNode }) {
         </div>
         <NavItems />
         <div className="flex items-center space-x-4">
-          <IconButton href="/search" icon={Search} label="Search" />
-          <IconButton href="/watch-list" icon={Heart} label="Watchlist" />
+          <TransitionLink href="/search">
+            <IconButton icon={Search} label="Search" href="/search" />
+          </TransitionLink>
+          <TransitionLink href="/watch-list">
+            <IconButton href="/watch-list" icon={Heart} label="Watchlist" />
+          </TransitionLink>
           {children}
           <Sidebar />
         </div>

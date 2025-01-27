@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import { toast } from "sonner";
+import { animatePageOut } from "@/lib/animations";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function SignUpPage() {
   useEffect(() => {
     if (state?.success) {
       toast.success("Signed up successfully");
-      router.push("/");
+      animatePageOut("/", router);
     }
   }, [state, router]);
 

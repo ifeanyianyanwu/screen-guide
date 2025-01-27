@@ -6,11 +6,11 @@ import {
   cardVariants,
   imageVariants,
 } from "./animations/variants";
-import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { TransitionLink } from "../transition-link";
 
 const AnimatedCard = motion(Card);
 
@@ -30,7 +30,7 @@ export const DetailedCard = ({
   const title = "title" in media ? media.title : media.name;
 
   return (
-    <Link href={`/${media.media_type || mediaType}/${media.id}`}>
+    <TransitionLink href={`/${media.media_type || mediaType}/${media.id}`}>
       <AnimatedCard
         variants={cardVariants}
         custom={1}
@@ -74,6 +74,6 @@ export const DetailedCard = ({
           </motion.div>
         </CardContent>
       </AnimatedCard>
-    </Link>
+    </TransitionLink>
   );
 };

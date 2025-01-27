@@ -6,7 +6,7 @@ import { Card, CardContent } from "../ui/card";
 import { cardVariants, imageVariants } from "./animations/variants";
 import Image from "next/image";
 import { getYear } from "@/lib/utils";
-import Link from "next/link";
+import { TransitionLink } from "../transition-link";
 
 const AnimatedCard = motion(Card);
 
@@ -37,7 +37,7 @@ export const StandardCard = ({
   ) || { name: "" };
 
   return (
-    <Link href={`/${mediaType}/${media.id}`}>
+    <TransitionLink href={`/${mediaType}/${media.id}`}>
       <AnimatedCard
         variants={cardVariants}
         custom={1}
@@ -84,6 +84,6 @@ export const StandardCard = ({
           </div>
         </CardContent>
       </AnimatedCard>
-    </Link>
+    </TransitionLink>
   );
 };

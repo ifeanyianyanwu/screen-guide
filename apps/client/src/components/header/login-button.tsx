@@ -2,7 +2,10 @@
 
 import { User } from "lucide-react";
 import { IconButton } from "./icon-button";
+import { TransitionLink } from "../transition-link";
 
 export const LoginButton = () => (
-  <IconButton href="/signin" label="User account" icon={User} />
+  <TransitionLink href="/signin">
+    <IconButton href="/signin" label="User account" icon={User} />
+  </TransitionLink>
 );

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { LucideIcon } from "lucide-react";
@@ -45,16 +44,6 @@ export function IconButton({
     ),
     onClick,
   };
-
-  if (href) {
-    return (
-      <Link href={href}>
-        <Button {...buttonProps} title={label}>
-          {buttonContent}
-        </Button>
-      </Link>
-    );
-  }
 
   return (
     <Button {...buttonProps} title={label}>
