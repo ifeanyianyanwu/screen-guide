@@ -103,12 +103,12 @@ export default function LoginPage() {
             </div>
 
             <div className="text-sm">
-              <a
-                href="#"
+              <p
+                onClick={() => toast.info("This feature is not available yet")}
                 className="font-medium text-[#3b82f6] hover:text-[#60a5fa]"
               >
                 Forgot your password?
-              </a>
+              </p>
             </div>
           </div>
 
