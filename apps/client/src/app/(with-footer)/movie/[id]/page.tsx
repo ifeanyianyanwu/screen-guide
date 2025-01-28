@@ -85,7 +85,7 @@ export default async function MovieDetailsPage({
               width={400}
               height={550}
               //TODO: Review this
-              className="rounded-lg object-cover w-full hidden md:block aspect-[9/16]"
+              className="rounded-lg object-cover w-full hidden md:block"
               priority
             />
             <Image
@@ -209,51 +209,48 @@ export default async function MovieDetailsPage({
           </div>
           <div className="grid gap-8 mt-8 text-gray-300">
             <div className="space-y-4">
-              <div className="flex justify-between py-2 border-b border-gray-800">
+              <div className="flex justify-between py-2 border-b border-gray-800 gap-4">
                 <span className="flex-1">Production year</span>
-                <span className="text-white flex-1">
+                <p className="text-white flex-1">
                   {getYear(details.release_date)}
-                </span>
+                </p>
               </div>
-              <div className="flex justify-between py-2 border-b border-gray-800">
+              <div className="flex justify-between py-2 border-b border-gray-800 gap-4">
                 <span className="flex-1">Production Countries</span>
-                <span className="text-white flex-1">
+                <p className="text-white flex-1 flex flex-wrap gap-x-2">
                   {details.production_countries.map((country, i) => (
-                    <React.Fragment key={country.name}>
+                    <span key={country.name}>
                       {country.name}
                       {details.production_countries.length - 1 !== i && ","}
-                      &nbsp;
-                    </React.Fragment>
+                    </span>
                   ))}
-                </span>
+                </p>
               </div>
-              <div className="flex justify-between py-2 border-b border-gray-800">
+              <div className="flex justify-between py-2 border-b border-gray-800 gap-4">
                 <span className="flex-1">Production Companies</span>
-                <span className="flex-1 text-white">
+                <p className="flex-1 text-white flex flex-wrap gap-x-2">
                   {details.production_companies.map((company, i) => (
-                    <React.Fragment key={company.id}>
+                    <span key={company.id}>
                       {company.name}
                       {details.production_companies.length - 1 !== i && ","}
-                      &nbsp;
-                    </React.Fragment>
+                    </span>
                   ))}
-                </span>
+                </p>
               </div>
-              <div className="flex justify-between py-2 border-b border-gray-800">
+              <div className="flex justify-between py-2 border-b border-gray-800 gap-4">
                 <span className="flex-1">Genre</span>
-                <span className="flex-1 text-white">
-                  {details.genres.map((genre) => (
-                    <React.Fragment key={genre.id}>
-                      {genre.name}&nbsp;
-                    </React.Fragment>
+                <p className="flex-1 text-white flex flex-wrap gap-x-2">
+                  {details.genres.map((genre, index) => (
+                    <span key={genre.id}>
+                      {genre.name}
+                      {index < details.genres.length - 1 && ","}
+                    </span>
                   ))}
-                </span>
+                </p>
               </div>
-              <div className="flex justify-between py-2 border-b border-gray-800">
+              <div className="flex justify-between py-2 border-b border-gray-800 gap-4">
                 <span className="flex-1">Duration</span>
-                <span className="flex-1 text-white">
-                  {details.runtime}&nbsp;mins
-                </span>
+                <p className="flex-1 text-white">{details.runtime}&nbsp;mins</p>
               </div>
             </div>
           </div>
