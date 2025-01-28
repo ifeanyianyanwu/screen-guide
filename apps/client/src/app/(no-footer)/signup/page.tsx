@@ -144,6 +144,7 @@ export default function SignUpPage() {
 
           <div className="mt-6">
             <Button
+              onClick={() => toast.info("This feature is not available yet")}
               variant="outline"
               className="w-full border-[#2e3441] bg-[#120f10] text-[#f2f7fc] hover:bg-[#2e3441]"
             >
