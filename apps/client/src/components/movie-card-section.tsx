@@ -7,12 +7,17 @@ import Image from "next/image";
 import { Genre, TVShow, Movie } from "@/types/media";
 import { getYear } from "@/lib/utils";
 import { appConfig } from "@/lib/config";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useInView, motion } from "framer-motion";
+import { Trailers } from "@/types/trailers";
+import { getMovieTrailers } from "@/api/tmdb";
+import YouTube from "react-youtube";
+import { TransitionLink } from "./transition-link";
 
-interface MovieCardectionProps {
+interface MovieCardSectionProps {
   data: Movie | TVShow;
   genres: Genre[];
+  mediaType: string;
 }
 
 const fadeUp = {
@@ -44,7 +49,10 @@ const containerVariant = {
 export default function MovieCardSection({
   data,
   genres,
-}: MovieCardectionProps) {
+  mediaType,
+}: MovieCardSectionProps) {
+  const [trailerUrl, setTrailerUrl] = useState("");
+  const [showVideo, setShowVideo] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, {
     once: true,
@@ -55,6 +63,37 @@ export default function MovieCardSection({
   const poster_path = `${appConfig.tmdbImageBaseURL}${data.backdrop_path}`;
   const title = "title" in data ? data.title : data.name;
   const date = "release_date" in data ? data.release_date : data.first_air_date;
+  const videoId = trailerUrl.split("/embed/")[1] || "";
+
+  useEffect(() => {
+    (async () => {
+      const trailers = await getMovieTrailers<Trailers>(Number(data.id));
+      const trailer = trailers.results.find(
+        (result) => result.type === "Trailer"
+      );
+      setTrailerUrl(
+        trailer ? `https://www.youtube.com/embed/${trailer.key}` : ""
+      );
+    })();
+  }, [data.id]);
+
+  const handleVideoStateChange = (event: { data: number }) => {
+    // YouTube player state changes: 2 = paused
+    if (event.data === 2) {
+      setShowVideo(false);
+    }
+  };
+
+  const youtubeOptions = {
+    height: "100%",
+    width: "100%",
+    playerVars: {
+      autoplay: 1,
+      modestbranding: 1,
+      controls: 1,
+      rel: 0,
+    },
+  };
 
   return (
     <motion.div
@@ -87,7 +126,7 @@ export default function MovieCardSection({
           </motion.div>
 
           <motion.h1
-            className="text-5xl font-bold text-white"
+            className="text-3xl font-bold text-white"
             variants={fadeUp}
             custom={1}
             initial="hidden"
@@ -130,39 +169,51 @@ export default function MovieCardSection({
                 18+
               </Badge>
             )}
-            <Button
-              variant="link"
-              className="text-white hover:text-white/80 px-0"
+            <TransitionLink
+              href={`/${mediaType}/${data.id}` + `?reset=${Date.now()}`}
             >
-              More Details
-            </Button>
-            <Button
-              variant="link"
-              className="text-white hover:text-white/80 px-0"
-            >
-              Watch Trailer
-            </Button>
+              <Button
+                variant="link"
+                className="text-white hover:text-white/80 px-0"
+              >
+                More Details
+              </Button>
+            </TransitionLink>
           </motion.div>
         </div>
-
         <motion.div
           variants={fadeUp}
           custom={1}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           className="relative flex-1 aspect-video w-full rounded-xl overflow-hidden group cursor-pointer"
+          onClick={() => !showVideo && setShowVideo(true)}
         >
-          <Image
-            src={poster_path}
-            alt={title}
-            fill
-            className="object-contain"
-          />
-          <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in">
-            <div className="w-16 h-16 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
-              <Play className="w-8 h-8 text-white" />
+          {showVideo && videoId ? (
+            <div className="absolute inset-0 w-full h-full">
+              <YouTube
+                videoId={videoId}
+                opts={youtubeOptions}
+                onStateChange={handleVideoStateChange}
+                className="w-full h-full"
+              />
             </div>
-          </div>
+          ) : (
+            <>
+              <Image
+                src={poster_path}
+                alt={title}
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in">
+                <div className="w-16 h-16 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
+                  <Play className="w-8 h-8 text-white" />
+                </div>
+              </div>
+            </>
+          )}
         </motion.div>
       </div>
     </motion.div>

@@ -136,7 +136,7 @@ const AnimatedCarouselItem = ({ media, genres }: AnimatedCarouselItemProps) => {
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
-              className="grid gap-10 max-w-xl lg:max-w-3xl"
+              className="grid gap-6 md:gap-10 max-w-xl lg:max-w-3xl"
             >
               <motion.div className="grid gap-5">
                 <motion.div

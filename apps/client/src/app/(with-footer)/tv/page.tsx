@@ -56,7 +56,11 @@ export default async function TvPage() {
         mediaType={mediaType}
       />
 
-      <MovieCardSection data={popularTvShows.results[0]} genres={genres} />
+      <MovieCardSection
+        data={popularTvShows.results[0]}
+        genres={genres}
+        mediaType="tv"
+      />
 
       <SectionCarousel
         genres={genres}

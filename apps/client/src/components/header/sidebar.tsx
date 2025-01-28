@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { navItems } from "./nav-items";
+import { TransitionLink } from "../transition-link";
 
 export const Sidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,19 +18,22 @@ export const Sidebar = () => {
           <span className="sr-only">Open menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-        <nav className="flex flex-col h-full">
-          <h2 className="text-lg font-semibold mb-4">Menu</h2>
-          <ul className="space-y-4 flex-grow">
+      <SheetContent
+        side="right"
+        className="w-full bg-background/70 backdrop-blur-lg"
+      >
+        <nav className="flex flex-col h-full justify-center items-center">
+          <ul className="space-y-4">
             {navItems.map((item) => (
               <li key={item.name}>
-                <a
-                  href={item.href}
-                  className="text-foreground hover:text-primary block py-2"
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  {item.name}
-                </a>
+                <TransitionLink href={item.href + `?reset=${Date.now()}`}>
+                  <p
+                    className="text-foreground hover:text-primary block py-2 text-center text-lg font-medium"
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    {item.name}
+                  </p>
+                </TransitionLink>
               </li>
             ))}
           </ul>

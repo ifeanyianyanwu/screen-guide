@@ -77,14 +77,15 @@ export default async function MovieDetailsPage({
           className="absolute inset-0 object-cover -z-20"
           priority
         />
-        <div className="container mx-auto px-4 py-20 flex flex-col lg:flex-row gap-20 items-start">
+        <div className="container mx-auto px-4 py-20 flex flex-col lg:flex-row gap-14 md:gap-20 items-start">
           <div className="relative w-full max-w-[400px] mx-auto lg:mx-0">
             <Image
               src={posterPath || ""}
               alt={details.title}
               width={400}
               height={550}
-              className="rounded-lg object-cover w-full hidden md:block"
+              //TODO: Review this
+              className="rounded-lg object-cover w-full hidden md:block aspect-[9/16]"
               priority
             />
             <Image
@@ -92,7 +93,8 @@ export default async function MovieDetailsPage({
               alt={details.title}
               width={400}
               height={550}
-              className="rounded-lg object-cover w-full md:hidden"
+              //TODO: Review this
+              className="rounded-lg object-cover w-full md:hidden aspect-video"
               priority
             />
             <ToggleWatchlist
@@ -112,7 +114,7 @@ export default async function MovieDetailsPage({
           </div>
           <div className="flex-1 space-y-10">
             <div className="space-y-4">
-              <div className="flex gap-x-2 items-center">
+              <div className="flex gap-2 items-center flex-wrap">
                 {details.genres.map((g) => {
                   const resolvedGenreName = genres.find(
                     (item) => item.id == g.id
@@ -142,7 +144,7 @@ export default async function MovieDetailsPage({
                 <span>{details.runtime}&nbsp;mins</span>
               </div>
             </div>
-            <p className="text-paragraph max-w-2xl text-lg">
+            <p className="text-paragraph max-w-2xl md:text-lg">
               {details.overview}
             </p>
             <div className="flex flex-wrap gap-4 items-center">

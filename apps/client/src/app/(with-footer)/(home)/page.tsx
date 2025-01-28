@@ -50,7 +50,11 @@ export default async function Home() {
         mediaType="tv"
       />
 
-      <MovieCardSection data={topRatedMovies.results[0]} genres={genres} />
+      <MovieCardSection
+        data={topRatedMovies.results[0]}
+        genres={genres}
+        mediaType="movie"
+      />
 
       <SectionCarousel
         genres={genres}

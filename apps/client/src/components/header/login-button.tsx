@@ -6,6 +6,6 @@ import { TransitionLink } from "../transition-link";
 
 export const LoginButton = () => (
   <TransitionLink href="/signin">
-    <IconButton href="/signin" label="User account" icon={User} />
+    <IconButton href="/signin" label="Signin" icon={User} />
   </TransitionLink>
 );

@@ -56,7 +56,11 @@ export default async function MoviePage() {
         mediaType={mediaType}
       />
 
-      <MovieCardSection data={topRatedMovies.results[0]} genres={genres} />
+      <MovieCardSection
+        data={topRatedMovies.results[0]}
+        genres={genres}
+        mediaType="movie"
+      />
 
       <SectionCarousel
         genres={genres}

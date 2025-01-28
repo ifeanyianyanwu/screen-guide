@@ -99,7 +99,7 @@ export function SectionCarousel({
       <motion.h2
         variants={cardVariants}
         custom={0}
-        className="text-[32px] font-bold mb-6"
+        className="text-3xl font-bold mb-6"
       >
         {sectionTitle}
       </motion.h2>
