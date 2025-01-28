@@ -15,12 +15,12 @@ export function EmptyWatchList() {
           what you want to watch.
         </p>
       </div>
-      <Button asChild className="mt-4 w-full" size="lg">
-        <TransitionLink href={"/search" + `?reset=${Date.now()}`}>
+      <TransitionLink href={"/search" + `?reset=${Date.now()}`}>
+        <Button className="mt-4 w-full" size="lg">
           <PlusCircle className="mr-2 h-10 w-10" />
           Add to Watch List
-        </TransitionLink>
-      </Button>
+        </Button>
+      </TransitionLink>
     </div>
   );
 }
