@@ -3,8 +3,6 @@
 import { ReactNode } from "react";
 import { Search, Heart } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "./sidebar";
 import { useScrolled } from "@/hooks/use-scrolled";
@@ -14,7 +12,6 @@ import { TransitionLink } from "../transition-link";
 
 export function Header({ children }: { children: ReactNode }) {
   const scrolled = useScrolled();
-  const pathname = usePathname();
 
   return (
     <header
@@ -25,21 +22,17 @@ export function Header({ children }: { children: ReactNode }) {
     >
       <div className="container mx-auto px-2 h-full flex items-center justify-between">
         <div className="flex items-center">
-          <Link
-            className={cn(
-              "transition-all duration-300 ease-in-out w-24",
-              pathname === "/" && "text-primary underline"
-            )}
-            href="/"
-          >
-            <Image
-              src="/assets/logo.png"
-              height={200}
-              width={200}
-              alt="Logo"
-              className="w-full"
-            />
-          </Link>
+          <TransitionLink href={"/" + `?reset=${Date.now()}`}>
+            <div className="w-24">
+              <Image
+                src="/assets/logo.png"
+                height={200}
+                width={200}
+                alt="Logo"
+                className="w-full"
+              />
+            </div>
+          </TransitionLink>
         </div>
         <NavItems />
         <div className="flex items-center space-x-4">
