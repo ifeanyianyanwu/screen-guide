@@ -27,7 +27,7 @@ export function Footer() {
         </ul>
         <div className="flex space-x-4">
           <Link
-            href="https://linkedin.com/in/yourusername"
+            href="https://www.linkedin.com/in/ifeanyianyanwu/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#bcc0c7] hover:text-[#3b82f6] transition-colors"
@@ -36,7 +36,7 @@ export function Footer() {
             <span className="sr-only">LinkedIn</span>
           </Link>
           <Link
-            href="https://twitter.com/yourusername"
+            href="https://x.com/ifeanyianyanwu_?s=21"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#bcc0c7] hover:text-[#3b82f6] transition-colors"
@@ -45,7 +45,7 @@ export function Footer() {
             <span className="sr-only">Twitter</span>
           </Link>
           <Link
-            href="https://github.com/yourusername"
+            href="https://github.com/ifeanyianyanwu"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#bcc0c7] hover:text-[#3b82f6] transition-colors"
