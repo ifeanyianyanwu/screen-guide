@@ -35,5 +35,8 @@ export const animatePageOut = (href: string, router: AppRouterInstance) => {
         router.push(href);
       },
     });
+  } else {
+    // Never block navigation if the banners aren't on the page.
+    router.push(href);
   }
 };

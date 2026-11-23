@@ -6,18 +6,29 @@ import { Play } from "lucide-react";
 import Image from "next/image";
 import { Genre, TVShow, Movie } from "@/types/media";
 import { getYear } from "@/lib/utils";
-import { appConfig } from "@/lib/config";
-import { useEffect, useRef, useState } from "react";
+import { tmdbImage } from "@/lib/config";
+import { type ComponentType, type KeyboardEvent, useRef, useState } from "react";
 import { useInView, motion } from "framer-motion";
-import { Trailers } from "@/types/trailers";
-import { getMovieTrailers } from "@/api/tmdb";
-import YouTube from "react-youtube";
+import dynamic from "next/dynamic";
+import type { YouTubeProps } from "react-youtube";
 import { TransitionLink } from "./transition-link";
+
+// The YouTube player is only needed after the user clicks play, so keep it
+// (and the YouTube iframe API loader) out of the initial bundle.
+const YouTube = dynamic<YouTubeProps>(
+  () =>
+    import("react-youtube").then(
+      (mod) => mod.default as unknown as ComponentType<YouTubeProps>
+    ),
+  { ssr: false }
+);
 
 interface MovieCardSectionProps {
   data: Movie | TVShow;
   genres: Genre[];
-  mediaType: string;
+  mediaType: "movie" | "tv";
+  /** YouTube video key of the trailer, fetched on the server. */
+  trailerKey?: string;
 }
 
 const fadeUp = {
@@ -50,8 +61,8 @@ export default function MovieCardSection({
   data,
   genres,
   mediaType,
+  trailerKey,
 }: MovieCardSectionProps) {
-  const [trailerUrl, setTrailerUrl] = useState("");
   const [showVideo, setShowVideo] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, {
@@ -60,22 +71,10 @@ export default function MovieCardSection({
     margin: "0px 0px -10% 0px",
   });
 
-  const poster_path = `${appConfig.tmdbImageBaseURL}${data.backdrop_path}`;
+  const poster_path = tmdbImage(data.backdrop_path, "w1280");
   const title = "title" in data ? data.title : data.name;
   const date = "release_date" in data ? data.release_date : data.first_air_date;
-  const videoId = trailerUrl.split("/embed/")[1] || "";
-
-  useEffect(() => {
-    (async () => {
-      const trailers = await getMovieTrailers<Trailers>(Number(data.id));
-      const trailer = trailers.results.find(
-        (result) => result.type === "Trailer"
-      );
-      setTrailerUrl(
-        trailer ? `https://www.youtube.com/embed/${trailer.key}` : ""
-      );
-    })();
-  }, [data.id]);
+  const videoId = trailerKey ?? "";
 
   const handleVideoStateChange = (event: { data: number }) => {
     // YouTube player state changes: 2 = paused
@@ -169,14 +168,13 @@ export default function MovieCardSection({
                 18+
               </Badge>
             )}
-            <TransitionLink
-              href={`/${mediaType}/${data.id}` + `?reset=${Date.now()}`}
-            >
+            <TransitionLink href={`/${mediaType}/${data.id}`} reset>
               <Button
+                asChild
                 variant="link"
                 className="text-white hover:text-white/80 px-0"
               >
-                More Details
+                <span>More Details</span>
               </Button>
             </TransitionLink>
           </motion.div>
@@ -188,6 +186,19 @@ export default function MovieCardSection({
           animate={isInView ? "visible" : "hidden"}
           className="relative flex-1 aspect-video w-full rounded-xl overflow-hidden group cursor-pointer"
           onClick={() => !showVideo && setShowVideo(true)}
+          {...(!showVideo && videoId
+            ? {
+                role: "button",
+                tabIndex: 0,
+                "aria-label": `Play trailer: ${title}`,
+                onKeyDown: (event: KeyboardEvent) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setShowVideo(true);
+                  }
+                },
+              }
+            : {})}
         >
           {showVideo && videoId ? (
             <div className="absolute inset-0 w-full h-full">
@@ -200,13 +211,15 @@ export default function MovieCardSection({
             </div>
           ) : (
             <>
-              <Image
-                src={poster_path}
-                alt={title}
-                fill
-                className="object-cover"
-                priority
-              />
+              {poster_path && (
+                <Image
+                  src={poster_path}
+                  alt={title}
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="object-cover"
+                />
+              )}
               <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in">
                 <div className="w-16 h-16 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
                   <Play className="w-8 h-8 text-white" />

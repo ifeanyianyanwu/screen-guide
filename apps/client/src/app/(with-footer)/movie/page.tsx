@@ -3,6 +3,7 @@ import {
   getNowPlayingMovies,
   getPopularMovies,
   getTopRatedMovies,
+  getTrailerKey,
   getTrendingMovies,
   getUpcomingMovies,
 } from "@/api/tmdb";
@@ -18,13 +19,23 @@ type Media = {
 } & Pagination;
 
 export default async function MoviePage() {
-  const trending = await getTrendingMovies<Media>("day");
-  const nowPlaying = await getNowPlayingMovies<Media>();
-  const popularMovies = await getPopularMovies<Media>();
-  const topRatedMovies = await getTopRatedMovies<Media>();
-  const upcomingMovies = await getUpcomingMovies<Media>();
-
-  const movieGenres = await getMoviesGenres<Genres>();
+  const [
+    trending,
+    nowPlaying,
+    popularMovies,
+    topRatedMovies,
+    upcomingMovies,
+    movieGenres,
+  ] = await Promise.all([
+    getTrendingMovies<Media>("day"),
+    getNowPlayingMovies<Media>(),
+    getPopularMovies<Media>(),
+    getTopRatedMovies<Media>(),
+    getUpcomingMovies<Media>(),
+    getMoviesGenres<Genres>(),
+  ]);
+  const featuredMovie = topRatedMovies.results[0];
+  const featuredTrailerKey = await getTrailerKey("movie", featuredMovie.id);
 
   const genres = movieGenres.genres;
   const mediaType = "movie";
@@ -57,9 +68,10 @@ export default async function MoviePage() {
       />
 
       <MovieCardSection
-        data={topRatedMovies.results[0]}
+        data={featuredMovie}
         genres={genres}
         mediaType="movie"
+        trailerKey={featuredTrailerKey}
       />
 
       <SectionCarousel

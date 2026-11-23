@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/actions";
+import { getSession } from "@/lib/session";
 import { LogoutButton } from "./logout-button";
 import { LoginButton } from "./login-button";
 

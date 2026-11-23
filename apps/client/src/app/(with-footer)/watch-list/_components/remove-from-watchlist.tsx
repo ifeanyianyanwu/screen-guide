@@ -8,18 +8,13 @@ import { useFormState, useFormStatus } from "react-dom";
 import { toast } from "sonner";
 
 interface RemoveFromWatchlistProps {
-  session: string;
   id: string;
 }
 
-export const RemoveFromWatchlist = ({
-  id,
-  session,
-}: RemoveFromWatchlistProps) => {
+export const RemoveFromWatchlist = ({ id }: RemoveFromWatchlistProps) => {
   const [state, dispatch] = useFormState(removeFromWatchlistAction, undefined);
 
   useEffect(() => {
-    console.log(state);
     if (state?.success) {
       toast.success("Removed from watchlist successfully");
     } else if (state?.error) {
@@ -28,7 +23,7 @@ export const RemoveFromWatchlist = ({
   }, [state]);
 
   const handleRemoveFromWatchlist = () => {
-    dispatch({ id, session });
+    dispatch({ id });
   };
 
   return (

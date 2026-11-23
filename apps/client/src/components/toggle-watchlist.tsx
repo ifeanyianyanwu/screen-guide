@@ -4,37 +4,31 @@ import React, { useEffect } from "react";
 import { Button } from "./ui/button";
 import { Heart, Loader2Icon } from "lucide-react";
 import Link from "next/link";
-import {
-  addToWatchlistAction,
-  InvalidSession,
-  removeFromWatchlistAction,
-  ValidSession,
-} from "@/lib/actions";
+import { addToWatchlistAction, removeFromWatchlistAction } from "@/lib/actions";
 import { TWatchListItemSchema } from "@screen-guide/types";
 import { useFormState, useFormStatus } from "react-dom";
 import { toast } from "sonner";
 
 interface WatchlistButtonProps {
   isInWatchList?: boolean;
+  /** Render as a non-interactive span (for use inside a link). */
+  asLinkContent?: boolean;
 }
 
 interface ToggleWatchlistProps {
   isInWatchList: boolean;
-  session: ValidSession | InvalidSession;
+  isLoggedIn: boolean;
   media: TWatchListItemSchema & { _id?: string };
 }
 
-const WatchlistButton = ({ isInWatchList }: WatchlistButtonProps) => {
+const WatchlistButton = ({
+  isInWatchList,
+  asLinkContent = false,
+}: WatchlistButtonProps) => {
   const { pending } = useFormStatus();
 
-  return (
-    <Button
-      className="absolute bottom-4 inset-x-4 overflow-hidden bg-background/20 backdrop-blur-lg group hover:bg-background/20"
-      size="lg"
-      type="submit"
-      aria-disabled={pending}
-      disabled={pending}
-    >
+  const content = (
+    <>
       <span
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 h-0 
        group-hover:w-[500px] group-hover:h-[500px] 
@@ -51,6 +45,29 @@ const WatchlistButton = ({ isInWatchList }: WatchlistButtonProps) => {
         )}
         {isInWatchList ? "Remove from watch list" : "Add to watch list"}
       </span>
+    </>
+  );
+
+  const className =
+    "absolute bottom-4 inset-x-4 overflow-hidden bg-background/20 backdrop-blur-lg group hover:bg-background/20";
+
+  if (asLinkContent) {
+    return (
+      <Button asChild className={className} size="lg">
+        <span>{content}</span>
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      className={className}
+      size="lg"
+      type="submit"
+      aria-disabled={pending}
+      disabled={pending}
+    >
+      {content}
     </Button>
   );
 };
@@ -58,7 +75,7 @@ const WatchlistButton = ({ isInWatchList }: WatchlistButtonProps) => {
 export const ToggleWatchlist = ({
   isInWatchList,
   media,
-  session,
+  isLoggedIn,
 }: ToggleWatchlistProps) => {
   const [removeActionState, dispatchRemove] = useFormState(
     removeFromWatchlistAction,
@@ -87,10 +104,10 @@ export const ToggleWatchlist = ({
     }
   }, [removeActionState]);
 
-  if (!session.isValid) {
+  if (!isLoggedIn) {
     return (
       <Link href="/signin">
-        <WatchlistButton />
+        <WatchlistButton asLinkContent />
       </Link>
     );
   }
@@ -102,9 +119,9 @@ export const ToggleWatchlist = ({
         return;
       }
 
-      dispatchRemove({ id: media._id, session: session.session });
+      dispatchRemove({ id: media._id });
     } else {
-      dispatchAdd({ body: media, session: session.session });
+      dispatchAdd({ body: media });
     }
   };
 
