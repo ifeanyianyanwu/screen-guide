@@ -1,25 +1,20 @@
+import type { CSSProperties } from "react";
 import { Genre, Movie, TVShow } from "@/types/media";
 import { MediaType } from "./types";
 import { tmdbImage } from "@/lib/config";
-import { motion } from "framer-motion";
 import { Card, CardContent } from "../ui/card";
-import { cardVariants, imageVariants } from "./animations/variants";
 import Image from "next/image";
 import { getYear } from "@/lib/utils";
 import { TransitionLink } from "../transition-link";
-
-const AnimatedCard = motion.create(Card);
 
 export const StandardCard = ({
   media,
   mediaType,
   genres,
-  isInView,
 }: {
   media: Movie | TVShow;
   mediaType: MediaType;
   genres: Genre[];
-  isInView: boolean;
 }) => {
   const poster_path = tmdbImage(media.poster_path, "w780");
   const backdrop_path = tmdbImage(media.backdrop_path, "w780");
@@ -34,13 +29,10 @@ export const StandardCard = ({
 
   return (
     <TransitionLink href={`/${mediaType}/${media.id}`} reset>
-      <AnimatedCard
-        variants={cardVariants}
-        custom={1}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        whileHover="hover"
-        className="border-0 bg-transparent group/media-card overflow-hidden"
+      {/* Fades up when the section scrolls into view (`.reveal`). */}
+      <Card
+        className="reveal border-0 bg-transparent group/media-card overflow-hidden"
+        style={{ "--delay": "0.1s" } as CSSProperties}
       >
         <CardContent className="p-0">
           <div className="relative aspect-video md:aspect-[3/4] overflow-hidden rounded-xl">
@@ -49,13 +41,7 @@ export const StandardCard = ({
                 {media.vote_average?.toFixed(1)}
               </span>
             </div>
-            <motion.div
-              className="w-full h-full"
-              variants={imageVariants}
-              initial="initial"
-              whileHover="hover"
-              animate="initial"
-            >
+            <div className="w-full h-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover/media-card:scale-105">
               {/* Only the visible one is fetched: hidden lazy images aren't loaded. */}
               {poster_path && (
                 <Image
@@ -75,7 +61,7 @@ export const StandardCard = ({
                   className="object-cover md:hidden"
                 />
               )}
-            </motion.div>
+            </div>
           </div>
           <div className="mt-4 grid content-start gap-y-2">
             <h2 className="text-lg font-semibold line-clamp-2">{title}</h2>
@@ -86,7 +72,7 @@ export const StandardCard = ({
             </div>
           </div>
         </CardContent>
-      </AnimatedCard>
+      </Card>
     </TransitionLink>
   );
 };

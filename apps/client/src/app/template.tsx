@@ -1,8 +1,15 @@
 "use client";
 
-import { animatePageIn } from "@/lib/animations";
+import { animatePageIn, preloadPageAnimations } from "@/lib/animations";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ReactNode, useEffect } from "react";
+import { CSSProperties, ReactNode, useEffect } from "react";
+
+const BANNERS = [
+  "left-0",
+  "left-1/4",
+  "left-2/4",
+  "left-3/4",
+] as const;
 
 export default function Template({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -10,14 +17,22 @@ export default function Template({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();
   const resetParam = searchParams.get("reset");
 
+  // The page-in reveal on mount is pure CSS (`.page-banner`), so it starts on
+  // first paint instead of after hydration. Fetch GSAP in the background for
+  // the page-out animation on the next click.
   useEffect(() => {
-    animatePageIn();
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(preloadPageAnimations);
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(preloadPageAnimations, 2000);
+    return () => clearTimeout(id);
   }, []);
 
   // Handle animation reset triggered by server components
   useEffect(() => {
     if (resetParam) {
-      animatePageIn();
+      void animatePageIn();
 
       // Clean up URL parameters after reset
       const newParams = new URLSearchParams(searchParams.toString());
@@ -30,22 +45,15 @@ export default function Template({ children }: { children: ReactNode }) {
 
   return (
     <div>
-      <div
-        className="min-h-screen bg-primary z-50 fixed top-0 left-0 w-1/4"
-        id="banner-1"
-      />
-      <div
-        className="min-h-screen bg-primary z-50 fixed top-0 left-1/4 w-1/4"
-        id="banner-2"
-      />
-      <div
-        className="min-h-screen bg-primary z-50 fixed top-0 left-2/4 w-1/4"
-        id="banner-3"
-      />
-      <div
-        className="min-h-screen bg-primary z-50 fixed top-0 left-3/4 w-1/4"
-        id="banner-4"
-      />
+      {BANNERS.map((left, index) => (
+        <div
+          key={left}
+          id={`banner-${index + 1}`}
+          aria-hidden
+          className={`page-banner min-h-screen bg-primary z-50 fixed top-0 ${left} w-1/4`}
+          style={{ "--banner-index": index } as CSSProperties}
+        />
+      ))}
       {children}
     </div>
   );

@@ -7,13 +7,12 @@ import {
   CarouselItem,
 } from "../ui/carousel";
 import * as React from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useInViewOnce } from "@/hooks/use-in-view-once";
 import { Genre, Movie, TVShow } from "@/types/media";
 import { cn } from "@/lib/utils";
 import { DetailedCard } from "./detailed-card";
 import { StandardCard } from "./standard-card";
 import { CarouselProgress } from "./carousel-progress";
-import { cardVariants, containerVariants } from "./animations/variants";
 
 type SectionCarouselProps = {
   carouselType?: "overflow" | "compact";
@@ -41,9 +40,8 @@ export function SectionCarousel({
   const [count, setCount] = React.useState(0);
   const [isAnimating, setIsAnimating] = React.useState(false);
 
-  const ref = React.useRef(null);
-  const isInView = useInView(ref, {
-    once: true,
+  const ref = React.useRef<HTMLDivElement>(null);
+  const isInView = useInViewOnce(ref, {
     amount: 0.2,
     margin: "0px 0px -10% 0px",
   });
@@ -59,18 +57,21 @@ export function SectionCarousel({
     setCount(api.scrollSnapList().length);
     setCurrent(api.selectedScrollSnap() + 1);
 
-    api.on("select", () => {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const onSelect = () => {
       // Set animating state when transition starts
       setIsAnimating(true);
       setCurrent(api.selectedScrollSnap() + 1);
 
       // Reset after animation completes
-      setTimeout(() => setIsAnimating(false), 300);
-    });
+      clearTimeout(timeout);
+      timeout = setTimeout(() => setIsAnimating(false), 300);
+    };
+    api.on("select", onSelect);
 
-    // Cleanup listener
     return () => {
-      api.off("select", (api) => api.destroy());
+      api.off("select", onSelect);
+      clearTimeout(timeout);
     };
   }, [api]);
 
@@ -89,20 +90,17 @@ export function SectionCarousel({
   };
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={containerVariants}
+      data-inview={isInView}
       className="w-full text-white container mx-auto px-4 space-y-4"
     >
-      <motion.h2
-        variants={cardVariants}
-        custom={0}
-        className="text-3xl font-bold mb-6"
+      <h2
+        className="reveal text-3xl font-bold mb-6"
+        style={{ "--delay": "0.2s" } as React.CSSProperties}
       >
         {sectionTitle}
-      </motion.h2>
+      </h2>
 
       <Carousel
         className="w-full"
@@ -111,13 +109,11 @@ export function SectionCarousel({
           align: "start",
         }}
       >
-        <motion.div
-          className="w-full relative"
-          animate={{
-            opacity: isAnimating ? 0.8 : 1,
-            scale: isAnimating ? 0.98 : 1,
-          }}
-          transition={{ duration: 0.3 }}
+        <div
+          className={cn(
+            "w-full relative transition-[opacity,transform] duration-300",
+            isAnimating && "opacity-80 scale-[0.98]"
+          )}
         >
           <CarouselContent
             className="-ml-8"
@@ -125,7 +121,6 @@ export function SectionCarousel({
               carouselType === "overflow" ? "overflow-visible" : ""
             }
           >
-            <AnimatePresence>
               {data
                 .slice(0, length)
                 .filter(
@@ -141,22 +136,19 @@ export function SectionCarousel({
                         <DetailedCard
                           media={media}
                           mediaType={mediaType}
-                          isInView={isInView}
                         />
                       ) : (
                         <StandardCard
                           media={media}
                           mediaType={mediaType}
                           genres={genres}
-                          isInView={isInView}
                         />
                       )}
                     </CarouselItem>
                   );
                 })}
-            </AnimatePresence>
           </CarouselContent>
-        </motion.div>
+        </div>
         <CarouselProgress
           current={current}
           count={count}
@@ -166,6 +158,6 @@ export function SectionCarousel({
           handlePrev={handlePrev}
         />
       </Carousel>
-    </motion.div>
+    </div>
   );
 }
