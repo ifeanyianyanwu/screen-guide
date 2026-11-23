@@ -353,14 +353,14 @@ export default function SearchPage() {
               <>
                 {searchResults && searchResults.results.length > 0 ? (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Cards fade up as results render (`.reveal-on-mount`). */}
+                    <div className="reveal-on-mount grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                       {searchResults.results.map((item) => (
                         <StandardCard
                           key={item.id}
                           media={item}
                           mediaType={item.media_type}
                           genres={genres ?? []}
-                          isInView={true}
                         />
                       ))}
                     </div>
