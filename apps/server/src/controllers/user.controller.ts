@@ -19,28 +19,35 @@ export const addToWatchList: ExpressRouteHandler = async (req, res) => {
     const userId = req.user!._id;
     const item = validationResult.data;
 
-    const user = (await getUserById(userId)) as User;
+    const user = (await getUserById(userId)) as User | null;
     if (!user) {
       return sendErrorResponse(res, 404, "User not found");
     }
 
-    const watchList = user.watchList;
+    const items = user.watchList?.items ?? [];
 
-    if (watchList.items.find((i) => i.mediaId === item.mediaId)) {
+    if (items.some((i) => i.mediaId === item.mediaId)) {
       return sendErrorResponse(
         res,
-        404,
+        409,
         "This media is already in your watchlist"
       );
     }
 
-    watchList.items.push(item);
-    await updateUserById(userId, { ...user, watchList });
+    // Only update the watch list (spreading a Mongoose document copies its
+    // internal state, not just the user's fields).
+    const updatedUser = await updateUserById(userId, {
+      watchList: { items: [...items, item] },
+    });
+
+    if (!updatedUser) {
+      return sendErrorResponse(res, 404, "User not found");
+    }
 
     return res.status(200).json({
       success: true,
       message: "Item added to Watchlist",
-      data: user.watchList,
+      data: updatedUser.watchList,
     });
   } catch (error) {
     console.error("Add to watch list error:", error);
@@ -70,16 +77,13 @@ export const removeFromWatchList: ExpressRouteHandler = async (req, res) => {
       return sendErrorResponse(res, 404, "User not found");
     }
 
-    const watchlistItem = user.watchList!.items.filter(
-      (item) => item.id === id
-    );
-    if (!watchlistItem) {
-      return sendErrorResponse(res, 404, `No corresponding media found`);
+    const items = user.watchList?.items ?? [];
+
+    if (!items.some((item) => item.id === id)) {
+      return sendErrorResponse(res, 404, "No corresponding media found");
     }
 
-    const updatedWatchList = user.watchList!.items.filter(
-      (item) => item.id !== id
-    );
+    const updatedWatchList = items.filter((item) => item.id !== id);
 
     const updatedUser = await updateUserById(userId, {
       watchList: { items: updatedWatchList },
@@ -91,7 +95,7 @@ export const removeFromWatchList: ExpressRouteHandler = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Item removed from cart",
+      message: "Item removed from Watchlist",
       data: updatedUser.watchList,
     });
   } catch (error) {

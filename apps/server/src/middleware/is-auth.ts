@@ -28,10 +28,16 @@ export const isAuthenticated: ExpressRouteHandler = (req, res, next) => {
       config.jwt.secret
     ) as ValidatedToken;
 
-    if (validatedToken) {
-      req.user = { _id: validatedToken._id, email: validatedToken.email };
-      next();
+    if (
+      !validatedToken ||
+      typeof validatedToken !== "object" ||
+      !validatedToken._id
+    ) {
+      return sendErrorResponse(res, 401, "Invalid token");
     }
+
+    req.user = { _id: validatedToken._id, email: validatedToken.email };
+    next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
       return sendErrorResponse(res, 401, "Token expired");
