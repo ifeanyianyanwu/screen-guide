@@ -1,6 +1,6 @@
 import { Genre, Movie, TVShow } from "@/types/media";
 import { MediaType } from "./types";
-import { appConfig } from "@/lib/config";
+import { tmdbImage } from "@/lib/config";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "../ui/card";
 import { cardVariants, imageVariants } from "./animations/variants";
@@ -21,12 +21,8 @@ export const StandardCard = ({
   genres: Genre[];
   isInView: boolean;
 }) => {
-  const poster_path = media.poster_path
-    ? `${appConfig.tmdbImageBaseURL}${media.poster_path}`
-    : null;
-  const backdrop_path = media.backdrop_path
-    ? `${appConfig.tmdbImageBaseURL}${media.backdrop_path}`
-    : null;
+  const poster_path = tmdbImage(media.poster_path, "w780");
+  const backdrop_path = tmdbImage(media.backdrop_path, "w780");
 
   const title = "title" in media ? media.title : media.name;
   const date =
@@ -37,7 +33,7 @@ export const StandardCard = ({
   ) || { name: "" };
 
   return (
-    <TransitionLink href={`/${mediaType}/${media.id}` + `?reset=${Date.now()}`}>
+    <TransitionLink href={`/${mediaType}/${media.id}`} reset>
       <AnimatedCard
         variants={cardVariants}
         custom={1}
@@ -60,18 +56,25 @@ export const StandardCard = ({
               whileHover="hover"
               animate="initial"
             >
-              <Image
-                src={poster_path || ""}
-                alt={title}
-                fill
-                className="object-cover max-md:hidden"
-              />
-              <Image
-                src={backdrop_path || ""}
-                alt={title}
-                fill
-                className="object-cover md:hidden"
-              />
+              {/* Only the visible one is fetched: hidden lazy images aren't loaded. */}
+              {poster_path && (
+                <Image
+                  src={poster_path}
+                  alt={title}
+                  fill
+                  sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
+                  className="object-cover max-md:hidden"
+                />
+              )}
+              {backdrop_path && (
+                <Image
+                  src={backdrop_path}
+                  alt={title}
+                  fill
+                  sizes="(min-width: 640px) 50vw, 100vw"
+                  className="object-cover md:hidden"
+                />
+              )}
             </motion.div>
           </div>
           <div className="mt-4 grid content-start gap-y-2">

@@ -2,6 +2,7 @@ import {
   getAiringTv,
   getPopularTv,
   getTopRatedTv,
+  getTrailerKey,
   getTrendingTvShows,
   getTvGenres,
   getTvOnTheAir,
@@ -18,13 +19,24 @@ type Media = {
 } & Pagination;
 
 export default async function TvPage() {
-  const trendingTvShows = await getTrendingTvShows<Media>("day");
-  const airingTodayTvShows = await getAiringTv<Media>();
-  const onTheAirTvShows = await getTvOnTheAir<Media>();
-  const popularTvShows = await getPopularTv<Media>();
-  const topRatedTvShows = await getTopRatedTv<Media>();
-
-  const tvGenres = await getTvGenres<Genres>();
+  const [
+    trendingTvShows,
+    airingTodayTvShows,
+    onTheAirTvShows,
+    popularTvShows,
+    topRatedTvShows,
+    tvGenres,
+  ] = await Promise.all([
+    getTrendingTvShows<Media>("day"),
+    getAiringTv<Media>(),
+    getTvOnTheAir<Media>(),
+    getPopularTv<Media>(),
+    getTopRatedTv<Media>(),
+    getTvGenres<Genres>(),
+  ]);
+  const featuredShow = popularTvShows.results[0];
+  // Previously fetched from the *movie* videos endpoint with a TV id.
+  const featuredTrailerKey = await getTrailerKey("tv", featuredShow.id);
 
   const genres = tvGenres.genres;
   const mediaType = "tv";
@@ -57,9 +69,10 @@ export default async function TvPage() {
       />
 
       <MovieCardSection
-        data={popularTvShows.results[0]}
+        data={featuredShow}
         genres={genres}
         mediaType="tv"
+        trailerKey={featuredTrailerKey}
       />
 
       <SectionCarousel

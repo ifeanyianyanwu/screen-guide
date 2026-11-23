@@ -1,4 +1,4 @@
-import { appConfig } from "@/lib/config";
+import { tmdbImage } from "@/lib/config";
 import { Movie, TVShow } from "@/types/media";
 import { MediaType } from "./types";
 import {
@@ -23,17 +23,14 @@ export const DetailedCard = ({
   mediaType: MediaType;
   isInView: boolean;
 }) => {
-  const backdrop_path = media.backdrop_path
-    ? `${appConfig.tmdbImageBaseURL}${media.backdrop_path}`
-    : null;
+  const backdrop_path = tmdbImage(media.backdrop_path, "w1280");
 
   const title = "title" in media ? media.title : media.name;
 
   return (
     <TransitionLink
-      href={
-        `/${media.media_type || mediaType}/${media.id}` + `?reset=${Date.now()}`
-      }
+      href={`/${media.media_type || mediaType}/${media.id}`}
+      reset
     >
       <AnimatedCard
         variants={cardVariants}
@@ -48,12 +45,15 @@ export const DetailedCard = ({
             className="relative w-full h-full"
             variants={imageVariants}
           >
-            <Image
-              src={backdrop_path || ""}
-              alt={title}
-              fill
-              className="object-cover"
-            />
+            {backdrop_path && (
+              <Image
+                src={backdrop_path}
+                alt={title}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            )}
           </motion.div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
 

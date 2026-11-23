@@ -1,23 +1,22 @@
-import { searchMovie, searchShow } from "@/api/tmdb";
+import { searchMediaAction, SearchMediaType } from "@/lib/tmdb-actions";
 import { Movie, TVShow } from "@/types/media";
 import { Pagination } from "@/types/shared";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface IMovie extends Movie {
   media_type: "movie";
 }
 
 interface ITVShow extends TVShow {
-  media_type: "movie";
-}
-
-interface IPerson extends TVShow, Movie {
-  media_type: "person";
+  media_type: "tv";
 }
 
 export type SearchResults = {
-  results: IMovie[] | ITVShow[] | IPerson[];
+  results: (IMovie | ITVShow)[];
 } & Pagination;
+
+const isSearchMediaType = (value: string): value is SearchMediaType =>
+  value === "movie" || value === "tv" || value === "all";
 
 export const useSearch = (
   searchTerm: string,
@@ -30,55 +29,49 @@ export const useSearch = (
     "uninitialized" | "loading" | "success" | "error"
   >("uninitialized");
 
-  const performSearch = useCallback(async () => {
+  useEffect(() => {
     if (!searchTerm) {
       setSearchResults(undefined);
       setStatus("uninitialized");
       return;
     }
 
+    // Ignore responses from searches that have been superseded, so a slow
+    // earlier request can't overwrite the results of a newer one.
+    let ignore = false;
+    const type = isSearchMediaType(mediaType) ? mediaType : "movie";
+
     setStatus("loading");
 
-    try {
-      let res;
-      const params = {
-        include_adult: includeAdult,
-        query: searchTerm,
-        page: currentPage,
-      };
+    searchMediaAction(type, searchTerm, includeAdult, currentPage)
+      .then((res) => {
+        if (ignore) return;
 
-      switch (mediaType) {
-        case "movie": {
-          res = await searchMovie<SearchResults>(params);
-          const transformedResults = res.results.map((show) => ({
-            ...show,
-            media_type: "movie",
-          }));
-          res = { ...res, results: transformedResults } as SearchResults;
-          break;
-        }
-        case "tv": {
-          res = await searchShow<SearchResults>(params);
-          const transformedResults = res.results.map((show) => ({
-            ...show,
-            media_type: "movie",
-          }));
-          res = { ...res, results: transformedResults } as SearchResults;
-          break;
-        }
-      }
+        const results = res.results
+          .map((item) => ({
+            ...item,
+            // search/movie and search/tv don't include media_type; search/multi
+            // does (and can also return people, which we have no page for).
+            media_type: type === "all" ? item.media_type : type,
+          }))
+          .filter(
+            (item): item is IMovie | ITVShow =>
+              item.media_type === "movie" || item.media_type === "tv"
+          );
 
-      setSearchResults(res);
-      setStatus("success");
-    } catch (error) {
-      console.error(error);
-      setStatus("error");
-    }
+        setSearchResults({ ...res, results });
+        setStatus("success");
+      })
+      .catch((error) => {
+        if (ignore) return;
+        console.error(error);
+        setStatus("error");
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [searchTerm, mediaType, includeAdult, currentPage]);
-
-  useEffect(() => {
-    performSearch();
-  }, [performSearch]);
 
   return { searchResults, status };
 };

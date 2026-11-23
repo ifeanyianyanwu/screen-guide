@@ -26,11 +26,12 @@ export const Sidebar = () => {
           <ul className="space-y-4">
             {navItems.map((item) => (
               <li key={item.name}>
-                <TransitionLink href={item.href + `?reset=${Date.now()}`}>
-                  <p
-                    className="text-foreground hover:text-primary block py-2 text-center text-lg font-medium"
-                    onClick={() => setSidebarOpen(false)}
-                  >
+                <TransitionLink
+                  href={item.href}
+                  reset
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <p className="text-foreground hover:text-primary block py-2 text-center text-lg font-medium">
                     {item.name}
                   </p>
                 </TransitionLink>

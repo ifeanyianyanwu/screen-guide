@@ -1,19 +1,25 @@
 "use server";
 
-import {
-  addToWatchList,
-  getWatchList,
-  removeFromWatchList,
-} from "@/api/server";
-import { signIn, signUp, verifyJwt } from "@/auth";
+import { addToWatchList, removeFromWatchList } from "@/api/server";
+import { signIn, signUp } from "@/auth";
+import { getSession, SESSION_COOKIE } from "@/lib/session";
 import { TWatchListItemSchema } from "@screen-guide/types";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
+const setSessionCookie = (token: string) => {
+  cookies().set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
+};
+
 export async function signInAction(_currentState: unknown, formData: FormData) {
   try {
     const res = await signIn(formData);
-    cookies().set("session", res.data.token, { httpOnly: true });
+    setSessionCookie(res.data.token);
     return { success: true };
   } catch (error) {
     if (error) {
@@ -28,7 +34,7 @@ export async function signInAction(_currentState: unknown, formData: FormData) {
 export async function signUpAction(_currentState: unknown, formData: FormData) {
   try {
     const res = await signUp(formData);
-    cookies().set("session", res.data.token, { httpOnly: true });
+    setSessionCookie(res.data.token);
     return { success: true };
   } catch (error) {
     if (error) {
@@ -40,12 +46,17 @@ export async function signUpAction(_currentState: unknown, formData: FormData) {
   }
 }
 
+// The session token is read from the httpOnly cookie on the server. It is
+// never sent to (or accepted from) the browser.
 export async function removeFromWatchlistAction(
   _currentState: unknown,
-  { id, session }: { id: string; session: string }
+  { id }: { id: string }
 ) {
+  const session = await getSession();
+  if (!session.isValid) return { error: "Please sign in again." };
+
   try {
-    await removeFromWatchList(id, session);
+    await removeFromWatchList(id, session.session);
   } catch (error) {
     if (error) {
       if (typeof error === "string") return { error };
@@ -61,10 +72,13 @@ export async function removeFromWatchlistAction(
 
 export async function addToWatchlistAction(
   _currentState: unknown,
-  { body, session }: { body: TWatchListItemSchema; session: string }
+  { body }: { body: TWatchListItemSchema }
 ) {
+  const session = await getSession();
+  if (!session.isValid) return { error: "Please sign in again." };
+
   try {
-    await addToWatchList(body, session);
+    await addToWatchList(body, session.session);
   } catch (error) {
     if (error) {
       if (typeof error === "string") return { error };
@@ -80,47 +94,5 @@ export async function addToWatchlistAction(
 
 export async function logout() {
   //Destroy the session
-  cookies().set("session", "");
-}
-
-export type InvalidSession = {
-  isValid: false;
-  session: undefined;
-};
-export type ValidSession = {
-  isValid: true;
-  session: string;
-};
-
-export async function getSession() {
-  const session = cookies().get("session")?.value;
-
-  if (!session) return { isValid: false, session } as InvalidSession;
-
-  const isValid = await verifyJwt(session);
-  if (isValid) {
-    return { isValid, session } as ValidSession;
-  }
-
-  return { isValid: false, session: undefined } as InvalidSession;
-}
-
-export async function getWatchlistStatus(
-  session: Awaited<ReturnType<typeof getSession>>,
-  id: string
-) {
-  if (!session.isValid) {
-    return { isInWatchList: false, watchlistItemId: undefined };
-  }
-
-  const res = await getWatchList(session.session);
-  const mediaIds = res.data.items.map((item) => Number(item.mediaId));
-  const watchlistItemId = res.data.items.find(
-    (item) => item.mediaId === Number(id)
-  )?._id;
-
-  return {
-    isInWatchList: mediaIds.includes(Number(id)),
-    watchlistItemId,
-  };
+  cookies().set(SESSION_COOKIE, "");
 }

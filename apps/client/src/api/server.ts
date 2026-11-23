@@ -1,4 +1,5 @@
-import { appConfig } from "@/lib/config";
+import "server-only";
+import { serverConfig } from "@/lib/server-config";
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import {
   TSignupSchema,
@@ -51,7 +52,7 @@ export const handleApiError = (
 };
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: appConfig.serverBaseUrl || "http://localhost:8080",
+  baseURL: serverConfig.serverBaseUrl,
   headers: {
     Accept: "application/json",
   },
@@ -111,7 +112,6 @@ export const removeFromWatchList = async (
       );
     return response.data;
   } catch (error) {
-    console.log(error);
     return handleApiError(error, "Failed to remove from watchlist");
   }
 };

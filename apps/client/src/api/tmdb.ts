@@ -1,156 +1,145 @@
-import { appConfig } from "@/lib/config";
+import "server-only";
+import { serverConfig } from "@/lib/server-config";
 import { SearchArgs } from "@/types/shared";
-import axios, { AxiosInstance } from "axios";
+import { Trailers } from "@/types/trailers";
 
-const apiClient: AxiosInstance = axios.create({
-  baseURL: appConfig.tmdbBaseURL,
-  headers: {
-    Authorization: `Bearer ${appConfig.tmdbApiToken}`,
-    Accept: "application/json",
-  },
-});
+// TMDB data changes slowly, so responses are cached in Next's Data Cache and
+// revalidated in the background. This keeps TTFB low on the (dynamic) pages
+// without serving stale data for long.
+const ONE_HOUR = 60 * 60;
+const ONE_DAY = 24 * ONE_HOUR;
+
+type QueryParams = Record<string, string | number | boolean | undefined>;
+
+type FetchOptions = {
+  params?: QueryParams;
+  // seconds, or `false` to skip the Data Cache entirely
+  revalidate?: number | false;
+};
+
+const tmdbGet = async <T>(
+  path: string,
+  { params, revalidate = ONE_HOUR }: FetchOptions = {}
+): Promise<T> => {
+  // Trailing slash so relative paths are appended to the base path (e.g. /3/).
+  const baseURL = serverConfig.tmdbBaseURL.replace(/\/?$/, "/");
+  const url = new URL(path, baseURL);
+  Object.entries(params ?? {}).forEach(([key, value]) => {
+    if (value !== undefined) url.searchParams.set(key, String(value));
+  });
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${serverConfig.tmdbApiToken}`,
+      Accept: "application/json",
+    },
+    ...(revalidate === false
+      ? { cache: "no-store" as const }
+      : { next: { revalidate } }),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `TMDB request to "${path}" failed with status ${response.status}`
+    );
+  }
+
+  return response.json() as Promise<T>;
+};
 
 // Trending
-export const getAllTrending = async <T>(timeWindow: string): Promise<T> => {
-  const response = await apiClient.get(`trending/all/${timeWindow}`);
-  return response.data;
-};
+export const getAllTrending = <T>(timeWindow: string) =>
+  tmdbGet<T>(`trending/all/${timeWindow}`);
 
 // Movies
-export const getTrendingMovies = async <T>(timeWindow: string): Promise<T> => {
-  const response = await apiClient.get(`trending/movie/${timeWindow}`);
-  return response.data;
-};
+export const getTrendingMovies = <T>(timeWindow: string) =>
+  tmdbGet<T>(`trending/movie/${timeWindow}`);
 
-export const getMoviesGenres = async <T>(): Promise<T> => {
-  const response = await apiClient.get("genre/movie/list");
-  return response.data;
-};
+export const getMoviesGenres = <T>() =>
+  tmdbGet<T>("genre/movie/list", { revalidate: ONE_DAY });
 
-export const getUpcomingMovies = async <T>(): Promise<T> => {
-  const response = await apiClient.get("movie/upcoming");
-  return response.data;
-};
+export const getUpcomingMovies = <T>() => tmdbGet<T>("movie/upcoming");
 
-export const getTopRatedMovies = async <T>(): Promise<T> => {
-  const response = await apiClient.get("movie/top_rated");
-  return response.data;
-};
+export const getTopRatedMovies = <T>() => tmdbGet<T>("movie/top_rated");
 
-export const getPopularMovies = async <T>(): Promise<T> => {
-  const response = await apiClient.get("movie/popular");
-  return response.data;
-};
+export const getPopularMovies = <T>() => tmdbGet<T>("movie/popular");
 
-export const getNowPlayingMovies = async <T>(): Promise<T> => {
-  const response = await apiClient.get("movie/now_playing");
-  return response.data;
-};
+export const getNowPlayingMovies = <T>() => tmdbGet<T>("movie/now_playing");
 
-export const getMovieDetails = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`movie/${id}`);
-  return response.data;
-};
+export const getMovieDetails = <T>(id: number) => tmdbGet<T>(`movie/${id}`);
 
-export const getMovieCredits = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`movie/${id}/credits`);
-  return response.data;
-};
+export const getMovieCredits = <T>(id: number) =>
+  tmdbGet<T>(`movie/${id}/credits`);
 
-export const getMovieTrailers = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`movie/${id}/videos`);
-  return response.data;
-};
+export const getMovieTrailers = <T>(id: number) =>
+  tmdbGet<T>(`movie/${id}/videos`);
 
-export const getWatchProviders = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`movie/${id}/watch/providers`);
-  return response.data;
-};
+export const getWatchProviders = <T>(id: number) =>
+  tmdbGet<T>(`movie/${id}/watch/providers`);
 
-export const getMovieReviews = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`movie/${id}/reviews`);
-  return response.data;
-};
+export const getMovieReviews = <T>(id: number) =>
+  tmdbGet<T>(`movie/${id}/reviews`);
 
-export const getSimilarMovies = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`movie/${id}/similar`);
-  return response.data;
-};
+export const getSimilarMovies = <T>(id: number) =>
+  tmdbGet<T>(`movie/${id}/similar`);
 
 // TV Shows
-export const getTrendingTvShows = async <T>(timeWindow: string): Promise<T> => {
-  const response = await apiClient.get(`trending/tv/${timeWindow}`);
-  return response.data;
-};
+export const getTrendingTvShows = <T>(timeWindow: string) =>
+  tmdbGet<T>(`trending/tv/${timeWindow}`);
 
-export const getTvDetails = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`tv/${id}`);
-  return response.data;
-};
+export const getTvDetails = <T>(id: number) => tmdbGet<T>(`tv/${id}`);
 
-export const getTvCredits = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`tv/${id}/credits`);
-  return response.data;
-};
+export const getTvCredits = <T>(id: number) => tmdbGet<T>(`tv/${id}/credits`);
 
-export const getTvTrailers = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`tv/${id}/videos`);
-  return response.data;
-};
+export const getTvTrailers = <T>(id: number) => tmdbGet<T>(`tv/${id}/videos`);
 
-export const getTvReviews = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`tv/${id}/reviews`);
-  return response.data;
-};
+export const getTvReviews = <T>(id: number) => tmdbGet<T>(`tv/${id}/reviews`);
 
-export const getSimilarShows = async <T>(id: number): Promise<T> => {
-  const response = await apiClient.get(`tv/${id}/similar`);
-  return response.data;
-};
+export const getSimilarShows = <T>(id: number) =>
+  tmdbGet<T>(`tv/${id}/similar`);
 
-export const getTvGenres = async <T>(): Promise<T> => {
-  const response = await apiClient.get("genre/tv/list");
-  return response.data;
-};
+export const getTvGenres = <T>() =>
+  tmdbGet<T>("genre/tv/list", { revalidate: ONE_DAY });
 
-export const getAiringTv = async <T>(): Promise<T> => {
-  const response = await apiClient.get("tv/airing_today");
-  return response.data;
-};
+export const getAiringTv = <T>() => tmdbGet<T>("tv/airing_today");
 
-export const getTvOnTheAir = async <T>(): Promise<T> => {
-  const response = await apiClient.get("tv/on_the_air");
-  return response.data;
-};
+export const getTvOnTheAir = <T>() => tmdbGet<T>("tv/on_the_air");
 
-export const getPopularTv = async <T>(): Promise<T> => {
-  const response = await apiClient.get("tv/popular");
-  return response.data;
-};
+export const getPopularTv = <T>() => tmdbGet<T>("tv/popular");
 
-export const getTopRatedTv = async <T>(): Promise<T> => {
-  const response = await apiClient.get("tv/top_rated");
-  return response.data;
-};
+export const getTopRatedTv = <T>() => tmdbGet<T>("tv/top_rated");
 
 // Configuration
-export const getCountries = async () => {
-  const response = await apiClient.get("configuration/countries");
-  return response.data;
-};
+export const getCountries = <T>() =>
+  tmdbGet<T>("configuration/countries", { revalidate: ONE_DAY });
 
-// Search
-export const searchAll = async <T>(args: SearchArgs): Promise<T> => {
-  const response = await apiClient.get("search/multi", { params: args });
-  return response.data;
-};
+// Search (user-driven, not worth caching)
+export const searchAll = <T>(args: SearchArgs) =>
+  tmdbGet<T>("search/multi", { params: args, revalidate: false });
 
-export const searchMovie = async <T>(args: SearchArgs): Promise<T> => {
-  const response = await apiClient.get("search/movie", { params: args });
-  return response.data;
-};
+export const searchMovie = <T>(args: SearchArgs) =>
+  tmdbGet<T>("search/movie", { params: args, revalidate: false });
 
-export const searchShow = async <T>(args: SearchArgs): Promise<T> => {
-  const response = await apiClient.get("search/tv", { params: args });
-  return response.data;
+export const searchShow = <T>(args: SearchArgs) =>
+  tmdbGet<T>("search/tv", { params: args, revalidate: false });
+
+/**
+ * Returns the YouTube key of the first official "Trailer" video for a movie
+ * or TV show, or `undefined` when there is none or the request fails (the
+ * trailer is a non-critical enhancement, it must never break the page).
+ */
+export const getTrailerKey = async (
+  mediaType: "movie" | "tv",
+  id: number
+): Promise<string | undefined> => {
+  try {
+    const trailers =
+      mediaType === "movie"
+        ? await getMovieTrailers<Trailers>(id)
+        : await getTvTrailers<Trailers>(id);
+    return trailers.results.find((result) => result.type === "Trailer")?.key;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
 };

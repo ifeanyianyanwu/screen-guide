@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { getMoviesGenres, getTvGenres } from "@/api/tmdb";
-import { Genre, Genres } from "@/types/media";
+import { getGenresAction } from "@/lib/tmdb-actions";
+import { Genre } from "@/types/media";
 import { useSearch } from "@/hooks/use-search";
 import { useDebounce } from "@/hooks/use-debounce";
 import { StandardCard } from "@/components/section-carousel/standard-card";
@@ -79,18 +79,9 @@ export default function SearchPage() {
   }, [searchTerm, mediaType, includeAdult, currentPage, updateUrl]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const [tvGenres, movieGenres] = await Promise.all([
-          getTvGenres<Genres>(),
-          getMoviesGenres<Genres>(),
-        ]);
-
-        setGenres([...tvGenres.genres, ...movieGenres.genres]);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
+    getGenresAction()
+      .then(setGenres)
+      .catch((error) => console.error(error));
   }, []);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 1000);
@@ -166,6 +157,7 @@ export default function SearchPage() {
           variant={currentPage === pageNumber ? "default" : "outline"}
           size="icon"
           onClick={() => handlePageChange(pageNumber)}
+          aria-current={currentPage === pageNumber ? "page" : undefined}
           className={`w-8 h-8 ${
             currentPage === pageNumber
               ? "bg-primary text-primary-foreground"
@@ -197,6 +189,7 @@ export default function SearchPage() {
                 className="w-8 h-8"
               >
                 <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">More pages</span>
               </Button>
             );
           }
@@ -218,6 +211,7 @@ export default function SearchPage() {
                 className="w-8 h-8"
               >
                 <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">More pages</span>
               </Button>
             );
           }
@@ -239,6 +233,7 @@ export default function SearchPage() {
               className="w-8 h-8"
             >
               <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Previous page</span>
             </Button>
             <div className="hidden sm:flex items-center gap-2">
               {renderPageButtons()}
@@ -251,6 +246,7 @@ export default function SearchPage() {
               className="w-8 h-8"
             >
               <ChevronRight className="h-4 w-4" />
+              <span className="sr-only">Next page</span>
             </Button>
           </div>
           <div className="text-sm text-muted-foreground">
@@ -283,6 +279,7 @@ export default function SearchPage() {
               <Input
                 type="text"
                 placeholder="Search Movies and TV shows..."
+                aria-label="Search movies and TV shows"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 rounded-lg h-10"
@@ -291,7 +288,10 @@ export default function SearchPage() {
           </div>
           <div className="hidden gap-x-2 md:flex">
             <Select onValueChange={setMediaType} value={mediaType}>
-              <SelectTrigger id="media-type" className="w-full h-10">
+              <SelectTrigger
+                className="w-full h-10"
+                aria-label="Media type"
+              >
                 <SelectValue placeholder="Select media type" />
               </SelectTrigger>
               <SelectContent>
@@ -314,6 +314,7 @@ export default function SearchPage() {
             <DrawerTrigger asChild>
               <Button variant="outline" className="md:hidden">
                 <Filter className="h-4 w-4" />
+                <span className="sr-only">Open filters</span>
               </Button>
             </DrawerTrigger>
             <DrawerContent className="">
@@ -358,7 +359,7 @@ export default function SearchPage() {
                           key={item.id}
                           media={item}
                           mediaType={item.media_type}
-                          genres={genres!}
+                          genres={genres ?? []}
                           isInView={true}
                         />
                       ))}

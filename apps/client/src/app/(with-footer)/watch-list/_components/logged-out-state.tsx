@@ -25,14 +25,16 @@ export function LoggedOutState() {
         </div>
         <div className="space-y-4">
           <TransitionLink href="/signin">
-            <Button className="w-full" size="lg">
-              Sign In
+            <Button asChild className="w-full" size="lg">
+              <span>Sign In</span>
             </Button>
           </TransitionLink>
           <TransitionLink href="/signup">
-            <Button variant="outline" className="w-full" size="lg">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Create Account
+            <Button asChild variant="outline" className="w-full" size="lg">
+              <span>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Create Account
+              </span>
             </Button>
           </TransitionLink>
         </div>

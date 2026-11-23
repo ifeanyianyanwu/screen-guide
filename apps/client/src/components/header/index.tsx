@@ -22,13 +22,14 @@ export function Header({ children }: { children: ReactNode }) {
     >
       <div className="container mx-auto px-2 h-full flex items-center justify-between">
         <div className="flex items-center">
-          <TransitionLink href={"/" + `?reset=${Date.now()}`}>
+          <TransitionLink href="/" reset>
             <div className="w-24">
               <Image
                 src="/assets/logo.png"
                 height={200}
                 width={200}
-                alt="Logo"
+                sizes="96px"
+                alt="Screen Guide home"
                 className="w-full"
               />
             </div>
@@ -36,12 +37,8 @@ export function Header({ children }: { children: ReactNode }) {
         </div>
         <NavItems />
         <div className="flex items-center space-x-4">
-          <TransitionLink href={"/search" + `?reset=${Date.now()}`}>
-            <IconButton icon={Search} label="Search" href="/search" />
-          </TransitionLink>
-          <TransitionLink href={"/watch-list" + `?reset=${Date.now()}`}>
-            <IconButton href="/watch-list" icon={Heart} label="Watchlist" />
-          </TransitionLink>
+          <IconButton icon={Search} label="Search" href="/search" reset />
+          <IconButton href="/watch-list" icon={Heart} label="Watchlist" reset />
           {children}
           <Sidebar />
         </div>

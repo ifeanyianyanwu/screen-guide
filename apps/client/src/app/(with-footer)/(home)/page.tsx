@@ -5,6 +5,7 @@ import {
   getTopRatedMovies,
   getTopRatedTv,
   getTvGenres,
+  getTrailerKey,
   getUpcomingMovies,
 } from "@/api/tmdb";
 import { HeroCarousel } from "@/components/hero-carousel";
@@ -19,16 +20,27 @@ type Media = {
 } & Pagination;
 
 export default async function Home() {
-  const trending = await getAllTrending<Media>("day");
-  const topRatedMovies = await getTopRatedMovies<Media>();
-  const popularMovies = await getPopularMovies<Media>();
-  const topRatedTvShows = await getTopRatedTv<Media>();
-  const upcomingMovies = await getUpcomingMovies<Media>();
-  const [tvGenres, movieGenres] = await Promise.all([
+  // Fetch everything in parallel (these used to run one after another).
+  const [
+    trending,
+    topRatedMovies,
+    popularMovies,
+    topRatedTvShows,
+    upcomingMovies,
+    tvGenres,
+    movieGenres,
+  ] = await Promise.all([
+    getAllTrending<Media>("day"),
+    getTopRatedMovies<Media>(),
+    getPopularMovies<Media>(),
+    getTopRatedTv<Media>(),
+    getUpcomingMovies<Media>(),
     getTvGenres<Genres>(),
     getMoviesGenres<Genres>(),
   ]);
   const genres = [...tvGenres.genres, ...movieGenres.genres];
+  const featuredMovie = topRatedMovies.results[0];
+  const featuredTrailerKey = await getTrailerKey("movie", featuredMovie.id);
   return (
     <main className="overflow-hidden space-y-14 lg:space-y-20 pb-16 md:pb-24">
       <HeroCarousel genres={genres} data={trending} />
@@ -51,9 +63,10 @@ export default async function Home() {
       />
 
       <MovieCardSection
-        data={topRatedMovies.results[0]}
+        data={featuredMovie}
         genres={genres}
         mediaType="movie"
+        trailerKey={featuredTrailerKey}
       />
 
       <SectionCarousel
